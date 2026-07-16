@@ -4,7 +4,7 @@ from contextlib import nullcontext
 import pytest
 from scrapli.exceptions import ScrapliConnectionError
 
-from execution_proxy.adapters.junos import JunosAdapter
+from execution_proxy.platforms.junos.driver import JunosAdapter
 from execution_proxy.contracts import ErrorCode, ExecutionError
 
 

@@ -4,7 +4,7 @@ from contextlib import nullcontext
 import pytest
 from scrapli.exceptions import ScrapliConnectionError
 
-from execution_proxy.adapters.frr import FrrAdapter
+from execution_proxy.platforms.frr.driver import FrrAdapter
 from execution_proxy.contracts import ErrorCode, ExecutionError
 
 
