@@ -6,7 +6,7 @@ import ipaddress
 import re
 from typing import Any, Mapping
 
-from execution_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
+from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
 
 
 MAX_DEVICES = 20

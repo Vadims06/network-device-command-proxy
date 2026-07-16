@@ -4,7 +4,7 @@ RUN apk add --no-cache openssh-client
 
 WORKDIR /app
 COPY pyproject.toml .
-COPY execution_proxy ./execution_proxy
+COPY device_command_proxy ./device_command_proxy
 RUN pip install --no-cache-dir .
 
 RUN addgroup -g 2000 execution-proxy \
@@ -14,4 +14,4 @@ RUN addgroup -g 2000 execution-proxy \
 
 USER execution-proxy
 EXPOSE 8080
-ENTRYPOINT ["uvicorn", "execution_proxy.main:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]
+ENTRYPOINT ["uvicorn", "device_command_proxy.main:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]

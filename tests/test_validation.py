@@ -1,7 +1,7 @@
 import pytest
 
-from execution_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
-from execution_proxy.validation import validate_arguments, validate_devices
+from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
+from device_command_proxy.validation import validate_arguments, validate_devices
 
 
 DEVICE = DeviceProfile(

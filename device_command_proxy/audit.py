@@ -11,9 +11,9 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from execution_proxy.contracts import DeviceResult
+from device_command_proxy.contracts import DeviceResult
 
-_logger = logging.getLogger("execution_proxy.audit")
+_logger = logging.getLogger("device_command_proxy.audit")
 
 
 def record(

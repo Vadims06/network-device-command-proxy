@@ -4,8 +4,8 @@ from contextlib import nullcontext
 import pytest
 from scrapli.exceptions import ScrapliConnectionError
 
-from execution_proxy.platforms.frr.driver import FrrAdapter
-from execution_proxy.contracts import ErrorCode, ExecutionError
+from device_command_proxy.platforms.frr.driver import FrrAdapter
+from device_command_proxy.contracts import ErrorCode, ExecutionError
 
 
 class FakeResponse:

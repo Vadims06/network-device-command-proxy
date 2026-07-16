@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import os
 
-from execution_proxy.api import create_app
-from execution_proxy.credential_provider import VaultCredentialProvider
-from execution_proxy.executor import BatchExecutor
-from execution_proxy.netbox_inventory import NetBoxInventoryProvider
-from execution_proxy.platforms import PLATFORMS
-from execution_proxy.vault_reader import VaultKv2Reader
+from device_command_proxy.api import create_app
+from device_command_proxy.credential_provider import VaultCredentialProvider
+from device_command_proxy.executor import BatchExecutor
+from device_command_proxy.netbox_inventory import NetBoxInventoryProvider
+from device_command_proxy.platforms import PLATFORMS
+from device_command_proxy.vault_reader import VaultKv2Reader
 
 
 PROFILE_PATHS = {

@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 from scrapli.exceptions import ScrapliException
 
-from execution_proxy.contracts import ErrorCode, ExecutionError
+from device_command_proxy.contracts import ErrorCode, ExecutionError
 
 
 DriverFactory = Callable[[], Any]

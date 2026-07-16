@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from time import monotonic
 from typing import Any, Callable, Mapping
 
-from execution_proxy.contracts import (
+from device_command_proxy.contracts import (
     CredentialProvider,
     DeviceCredentials,
     ErrorCode,

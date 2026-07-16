@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 from typing import Iterator
 
-from execution_proxy.contracts import DeviceCredentials
+from device_command_proxy.contracts import DeviceCredentials
 
 
 @contextmanager

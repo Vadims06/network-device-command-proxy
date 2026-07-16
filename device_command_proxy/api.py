@@ -8,8 +8,8 @@ from typing import Any
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from execution_proxy.contracts import ExecutionError, OperationRequest
-from execution_proxy.executor import BatchExecutor
+from device_command_proxy.contracts import ExecutionError, OperationRequest
+from device_command_proxy.executor import BatchExecutor
 
 
 class ExecuteRequest(BaseModel):
