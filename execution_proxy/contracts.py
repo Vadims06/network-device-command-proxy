@@ -10,6 +10,7 @@ from typing import Any, Mapping, Protocol
 class ErrorCode(StrEnum):
     INVALID_REQUEST = "invalid_request"
     DEVICE_NOT_FOUND = "device_not_found"
+    INVENTORY_UNAVAILABLE = "inventory_unavailable"
     UNSUPPORTED_PLATFORM = "unsupported_platform"
     UNSUPPORTED_OPERATION = "unsupported_operation"
     DEVICE_UNREACHABLE = "device_unreachable"

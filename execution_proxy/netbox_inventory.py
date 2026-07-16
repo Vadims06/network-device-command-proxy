@@ -57,7 +57,7 @@ class NetBoxInventoryProvider:
                 name=device_name,
                 host=self._management_host(device),
                 port=int(device.get("custom_fields", {}).get("ssh_port", 22)),
-                platform=device.get("platform", {}).get("slug", ""),
+                platform=(device.get("platform") or {}).get("slug", ""),
                 credential_profile=device.get("custom_fields", {}).get(
                     "credential_profile", ""
                 ),
@@ -65,9 +65,15 @@ class NetBoxInventoryProvider:
             )
         except ExecutionError:
             raise
-        except (httpx.HTTPError, KeyError, TypeError, ValueError) as exception:
+        except (
+            httpx.HTTPError,
+            KeyError,
+            TypeError,
+            ValueError,
+            AttributeError,
+        ) as exception:
             raise ExecutionError(
-                ErrorCode.DEVICE_NOT_FOUND,
+                ErrorCode.INVENTORY_UNAVAILABLE,
                 "live inventory is unavailable or invalid",
             ) from exception
 
@@ -76,7 +82,7 @@ class NetBoxInventoryProvider:
             self._client.close()
 
     def _management_host(self, device: dict) -> str:
-        address = device.get("primary_ip4", {}).get("address")
+        address = (device.get("primary_ip4") or {}).get("address")
         if not isinstance(address, str):
             raise ValueError("device has no primary IPv4 address")
         host = ipaddress.ip_interface(address).ip
