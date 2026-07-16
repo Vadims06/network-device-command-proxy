@@ -1,4 +1,4 @@
-"""Junos semantic operation adapter.
+"""Junos semantic operation adapter and Scrapli driver creation.
 
 Junos `| display json` wraps every leaf value as a single-element list of
 `{"data": ...}` (an artifact of its XML-to-JSON conversion). `_field()`
@@ -8,17 +8,51 @@ FRR adapter so the two vendors satisfy one shared contract.
 
 from __future__ import annotations
 
-import json
-from typing import Any, Callable
+from contextlib import contextmanager
+from typing import Any, Iterator
 
-from scrapli.exceptions import ScrapliException
+from scrapli.driver.core import JunosDriver
 
-from execution_proxy.contracts import ErrorCode, ExecutionError
+from execution_proxy.contracts import DeviceCredentials, DeviceProfile
+from execution_proxy.platforms.base import DeviceAdapter
+from execution_proxy.ssh_auth import authentication_options
 
 
-DriverFactory = Callable[[], Any]
+@contextmanager
+def create_junos_driver(
+    device: DeviceProfile,
+    credentials: DeviceCredentials,
+    *,
+    known_hosts_file: str = "/etc/execution-proxy/known_hosts",
+    private_key_directory: str = "/run/execution-proxy",
+) -> Iterator[JunosDriver]:
+    with authentication_options(
+        credentials,
+        private_key_directory=private_key_directory,
+    ) as authentication:
+        driver = JunosDriver(
+            host=device.host,
+            port=device.port,
+            auth_username=credentials.username,
+            auth_strict_key=True,
+            ssh_known_hosts_file=known_hosts_file,
+            timeout_socket=5.0,
+            timeout_transport=10.0,
+            timeout_ops=10.0,
+            transport="system",
+            channel_log=False,
+            **authentication,
+        )
+        try:
+            driver.open()
+            yield driver
+        finally:
+            if driver.isalive():
+                driver.close()
 
-MAX_OUTPUT_BYTES = 1_000_000
+
+def create_adapter(device: DeviceProfile, credentials: DeviceCredentials) -> "JunosAdapter":
+    return JunosAdapter(lambda: create_junos_driver(device, credentials))
 
 
 def _field(node: dict[str, Any], key: str, default: Any = None) -> Any:
@@ -32,9 +66,9 @@ def _items(node: dict[str, Any], key: str) -> list[dict[str, Any]]:
     return node.get(key) or []
 
 
-class JunosAdapter:
-    def __init__(self, driver_factory: DriverFactory):
-        self._driver_factory = driver_factory
+class JunosAdapter(DeviceAdapter):
+    def __init__(self, driver_factory):
+        super().__init__(driver_factory)
         self._operation_handlers = {
             "get_ospf_neighbors": self._get_ospf_neighbors,
             "get_ospf_neighbor_detail": self._get_ospf_neighbor_detail,
@@ -43,37 +77,6 @@ class JunosAdapter:
             "get_ospf_status": self._get_ospf_status,
             "get_route": self._get_route,
         }
-
-    def run(self, operation: str, **arguments: Any) -> dict[str, Any]:
-        operation_handler = self._operation_handlers.get(operation)
-        if operation_handler is None:
-            raise ExecutionError(
-                ErrorCode.UNSUPPORTED_OPERATION,
-                "operation is not supported by platform",
-            )
-        command, normalizer = operation_handler(**arguments)
-        try:
-            with self._driver_factory() as driver:
-                response = driver.send_command(command)
-        except (ScrapliException, OSError) as exception:
-            raise ExecutionError(
-                ErrorCode.DEVICE_UNREACHABLE, "device connection failed"
-            ) from exception
-        if response.failed:
-            raise ExecutionError(ErrorCode.DEVICE_UNREACHABLE, "device command failed")
-        if len(response.result) > MAX_OUTPUT_BYTES:
-            raise ExecutionError(
-                ErrorCode.OUTPUT_TOO_LARGE,
-                "device output exceeds the size limit",
-            )
-        try:
-            payload = json.loads(response.result)
-            return normalizer(payload)
-        except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exception:
-            raise ExecutionError(
-                ErrorCode.INTERNAL_ERROR,
-                "device returned an invalid response",
-            ) from exception
 
     def _get_ospf_neighbors(self):
         return "show ospf neighbor | display json", _normalize_neighbors
