@@ -2,6 +2,7 @@ import json
 from contextlib import nullcontext
 
 import pytest
+from scrapli.exceptions import ScrapliConnectionError
 
 from execution_proxy.adapters.frr import FrrAdapter
 from execution_proxy.contracts import ErrorCode, ExecutionError
@@ -155,3 +156,19 @@ def test_free_text_operation_is_rejected_before_driver_creation():
         adapter.run("run_command", command="configure terminal")
 
     assert raised_error.value.code == ErrorCode.UNSUPPORTED_OPERATION
+
+
+def test_transport_failure_is_reported_as_device_unreachable():
+    class FailingDriverFactory:
+        def __enter__(self):
+            raise ScrapliConnectionError("connection refused")
+
+        def __exit__(self, *_exc_info):
+            return False
+
+    adapter = FrrAdapter(lambda: FailingDriverFactory())
+
+    with pytest.raises(ExecutionError) as raised_error:
+        adapter.run("get_ospf_neighbors")
+
+    assert raised_error.value.code == ErrorCode.DEVICE_UNREACHABLE
