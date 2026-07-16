@@ -1,0 +1,265 @@
+import json
+from contextlib import nullcontext
+
+import pytest
+
+from execution_proxy.adapters.junos import JunosAdapter
+from execution_proxy.contracts import ErrorCode, ExecutionError
+
+
+class FakeResponse:
+    def __init__(self, result, *, failed=False):
+        self.result = result
+        self.failed = failed
+
+
+class FakeDriver:
+    def __init__(self, expected_command, payload):
+        self.expected_command = expected_command
+        self.payload = payload
+
+    def send_command(self, command):
+        assert command == self.expected_command
+        return FakeResponse(json.dumps(self.payload))
+
+
+def _adapter(command, payload):
+    return JunosAdapter(lambda: nullcontext(FakeDriver(command, payload)))
+
+
+def _leaf(value):
+    return [{"data": value}]
+
+
+def test_interface_status_normalizes_literal_junos_fixture():
+    adapter = _adapter(
+        "show interfaces ge-0/0/1 | display json",
+        {
+            "interface-information": [
+                {
+                    "physical-interface": [
+                        {
+                            "name": _leaf("ge-0/0/1"),
+                            "admin-status": _leaf("up"),
+                            "oper-status": _leaf("down"),
+                            "mtu": _leaf("1500"),
+                            "speed": _leaf("1000mbps"),
+                            "logical-interface": [
+                                {
+                                    "address-family": [
+                                        {
+                                            "address-family-name": _leaf("inet"),
+                                            "interface-address": [
+                                                {"ifa-local": _leaf("192.168.13.1/24")}
+                                            ],
+                                        }
+                                    ]
+                                }
+                            ],
+                        }
+                    ]
+                }
+            ]
+        },
+    )
+
+    assert adapter.run("get_interface_status", interface="ge-0/0/1") == {
+        "interface": "ge-0/0/1",
+        "admin_up": True,
+        "oper_up": False,
+        "addresses": ["192.168.13.1/24"],
+        "mtu": 1500,
+        "speed_mbps": 1000,
+    }
+
+
+def test_neighbors_normalize_literal_junos_fixture():
+    adapter = _adapter(
+        "show ospf neighbor | display json",
+        {
+            "ospf-neighbor-information": [
+                {
+                    "ospf-neighbor": [
+                        {
+                            "neighbor-address": _leaf("192.168.13.3"),
+                            "interface-name": _leaf("ge-0/0/1.0"),
+                            "ospf-neighbor-state": _leaf("Full"),
+                            "neighbor-id": _leaf("10.10.10.3"),
+                            "activity-timer": _leaf("39"),
+                        }
+                    ]
+                }
+            ]
+        },
+    )
+
+    assert adapter.run("get_ospf_neighbors") == {
+        "instance": None,
+        "neighbors": [
+            {
+                "router_id": "10.10.10.3",
+                "state": "Full",
+                "role": None,
+                "interface": "ge-0/0/1.0",
+                "peer_address": "192.168.13.3",
+                "dead_time_ms": 39000,
+            }
+        ],
+    }
+
+
+def test_route_normalizes_literal_junos_fixture():
+    adapter = _adapter(
+        "show route 10.10.10.6/32 | display json",
+        {
+            "route-information": [
+                {
+                    "route-table": [
+                        {
+                            "rt": [
+                                {
+                                    "rt-destination": _leaf("10.10.10.6/32"),
+                                    "rt-entry": [
+                                        {
+                                            "protocol-name": _leaf("OSPF"),
+                                            "preference": _leaf("10"),
+                                            "metric": _leaf("20"),
+                                            "current-active": _leaf(""),
+                                            "nh": [
+                                                {
+                                                    "to": _leaf("192.168.13.3"),
+                                                    "via": _leaf("ge-0/0/1.0"),
+                                                }
+                                            ],
+                                        }
+                                    ],
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+    )
+
+    assert adapter.run("get_route", prefix="10.10.10.6/32") == {
+        "prefix": "10.10.10.6/32",
+        "found": True,
+        "routes": [
+            {
+                "protocol": "OSPF",
+                "selected": True,
+                "distance": 10,
+                "metric": 20,
+                "next_hops": [
+                    {
+                        "address": "192.168.13.3",
+                        "interface": "ge-0/0/1.0",
+                        "active": True,
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_ospf_status_normalizes_literal_junos_fixture():
+    adapter = _adapter(
+        "show ospf overview | display json",
+        {
+            "ospf-overview-information": [
+                {
+                    "ospf-overview": [
+                        {
+                            "ospf-router-id": _leaf("10.10.10.2"),
+                            "ospf-area-overview": [
+                                {
+                                    "ospf-area": _leaf("0.0.0.0"),
+                                    "ospf-nbr-overview": [
+                                        {"ospf-nbr-up-count": _leaf("1")}
+                                    ],
+                                    "ospf-intf-overview": [
+                                        {"ospf-intf-active-count": _leaf("2")}
+                                    ],
+                                }
+                            ],
+                        }
+                    ]
+                }
+            ]
+        },
+    )
+
+    assert adapter.run("get_ospf_status") == {
+        "instance": None,
+        "router_id": "10.10.10.2",
+        "areas": [
+            {
+                "area": "0.0.0.0",
+                "active_interfaces": 2,
+                "full_neighbors": 1,
+                "spf_runs": None,
+                "lsa_count": None,
+            }
+        ],
+    }
+
+
+def test_ospf_interface_normalizes_literal_junos_fixture():
+    adapter = _adapter(
+        "show ospf interface ge-0/0/1.0 detail | display json",
+        {
+            "ospf-interface-information": [
+                {
+                    "ospf-interface": [
+                        {
+                            "interface-name": _leaf("ge-0/0/1.0"),
+                            "ospf-area": _leaf("0.0.0.0"),
+                            "interface-type": _leaf("P2P"),
+                            "ospf-interface-state": _leaf("PtToPt"),
+                            "neighbor-count": _leaf("1"),
+                            "ospf-interface-cost": _leaf("100"),
+                            "hello-interval": _leaf("10"),
+                            "dead-interval": _leaf("40"),
+                        }
+                    ]
+                }
+            ]
+        },
+    )
+
+    assert adapter.run("get_ospf_interface", interface="ge-0/0/1.0") == {
+        "interface": "ge-0/0/1.0",
+        "up": True,
+        "enabled": True,
+        "state": "PtToPt",
+        "network_type": "P2P",
+        "area": "0.0.0.0",
+        "cost": 100,
+        "hello_interval_ms": 10000,
+        "dead_interval_sec": 40,
+        "neighbors": 1,
+        "adjacent_neighbors": 1,
+    }
+
+
+def test_free_text_operation_is_rejected_before_driver_creation():
+    adapter = JunosAdapter(lambda: pytest.fail("driver must not be created"))
+
+    with pytest.raises(ExecutionError) as raised_error:
+        adapter.run("run_command", command="configure")
+
+    assert raised_error.value.code == ErrorCode.UNSUPPORTED_OPERATION
+
+
+def test_oversized_device_output_is_rejected_before_parsing():
+    class OversizedDriver:
+        def send_command(self, _command):
+            return FakeResponse("x" * 1_000_001)
+
+    adapter = JunosAdapter(lambda: nullcontext(OversizedDriver()))
+
+    with pytest.raises(ExecutionError) as raised_error:
+        adapter.run("get_ospf_neighbors")
+
+    assert raised_error.value.code == ErrorCode.OUTPUT_TOO_LARGE
