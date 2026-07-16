@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any, Callable
 
+from scrapli.exceptions import ScrapliException
+
 from execution_proxy.contracts import ErrorCode, ExecutionError
 
 
@@ -33,8 +35,13 @@ class FrrAdapter:
                 "operation is not supported by platform",
             )
         command, normalizer = operation_handler(**arguments)
-        with self._driver_factory() as driver:
-            response = driver.send_command(command)
+        try:
+            with self._driver_factory() as driver:
+                response = driver.send_command(command)
+        except (ScrapliException, OSError) as exception:
+            raise ExecutionError(
+                ErrorCode.DEVICE_UNREACHABLE, "device connection failed"
+            ) from exception
         if response.failed:
             raise ExecutionError(ErrorCode.DEVICE_UNREACHABLE, "device command failed")
         if len(response.result) > MAX_OUTPUT_BYTES:
