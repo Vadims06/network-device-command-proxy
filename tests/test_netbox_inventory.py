@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from execution_proxy.contracts import ErrorCode, ExecutionError
-from execution_proxy.netbox_inventory import NetBoxInventoryProvider
+from device_command_proxy.contracts import ErrorCode, ExecutionError
+from device_command_proxy.netbox_inventory import NetBoxInventoryProvider
 
 
 def _provider(address="172.21.20.11/24", platform={"slug": "frr"}):

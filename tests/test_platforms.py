@@ -1,4 +1,4 @@
-from execution_proxy.platforms import PLATFORMS
+from device_command_proxy.platforms import PLATFORMS
 
 
 def test_platforms_registry_has_exactly_frr_and_junos():

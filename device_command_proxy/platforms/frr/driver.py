@@ -7,9 +7,9 @@ from typing import Any, Iterator
 
 from scrapli.driver.generic import GenericDriver
 
-from execution_proxy.contracts import DeviceCredentials, DeviceProfile
-from execution_proxy.platforms.base import DeviceAdapter
-from execution_proxy.ssh_auth import authentication_options
+from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
+from device_command_proxy.platforms.base import DeviceAdapter
+from device_command_proxy.ssh_auth import authentication_options
 
 
 @contextmanager

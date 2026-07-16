@@ -4,8 +4,8 @@ from contextlib import nullcontext
 import pytest
 from scrapli.exceptions import ScrapliConnectionError
 
-from execution_proxy.platforms.junos.driver import JunosAdapter
-from execution_proxy.contracts import ErrorCode, ExecutionError
+from device_command_proxy.platforms.junos.driver import JunosAdapter
+from device_command_proxy.contracts import ErrorCode, ExecutionError
 
 
 class FakeResponse:

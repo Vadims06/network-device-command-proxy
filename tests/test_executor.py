@@ -1,14 +1,14 @@
 import json
 import time
 
-from execution_proxy.contracts import (
+from device_command_proxy.contracts import (
     DeviceCredentials,
     DeviceProfile,
     ErrorCode,
     ExecutionError,
     OperationRequest,
 )
-from execution_proxy.executor import BatchExecutor
+from device_command_proxy.executor import BatchExecutor
 
 
 class Inventory:
@@ -98,7 +98,7 @@ def test_execution_emits_one_audit_record_per_device_without_secrets(caplog):
         {"frr": lambda device, _credentials: Adapter(device.name)},
     )
     try:
-        with caplog.at_level("INFO", logger="execution_proxy.audit"):
+        with caplog.at_level("INFO", logger="device_command_proxy.audit"):
             executor.execute(
                 OperationRequest(
                     operation="get_interface_status",

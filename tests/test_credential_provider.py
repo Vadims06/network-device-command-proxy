@@ -1,7 +1,7 @@
 import pytest
 
-from execution_proxy.contracts import ErrorCode, ExecutionError
-from execution_proxy.credential_provider import VaultCredentialProvider
+from device_command_proxy.contracts import ErrorCode, ExecutionError
+from device_command_proxy.credential_provider import VaultCredentialProvider
 
 
 PROFILE_PATHS = {

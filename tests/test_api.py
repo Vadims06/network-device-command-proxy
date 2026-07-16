@@ -3,8 +3,8 @@ import inspect
 
 import httpx
 
-from execution_proxy.api import create_app
-from execution_proxy.contracts import DeviceResult
+from device_command_proxy.api import create_app
+from device_command_proxy.contracts import DeviceResult
 
 
 class Executor:

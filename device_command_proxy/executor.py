@@ -7,8 +7,8 @@ from threading import Lock, Semaphore
 from time import perf_counter
 from typing import Any, Callable, Mapping
 
-from execution_proxy import audit
-from execution_proxy.contracts import (
+from device_command_proxy import audit
+from device_command_proxy.contracts import (
     CredentialProvider,
     DeviceResult,
     ErrorCode,
@@ -17,7 +17,7 @@ from execution_proxy.contracts import (
     OperationError,
     OperationRequest,
 )
-from execution_proxy.validation import validate_arguments, validate_devices
+from device_command_proxy.validation import validate_arguments, validate_devices
 
 
 AdapterFactory = Callable[[Any, Any], Any]

@@ -7,7 +7,7 @@ from typing import Iterable
 
 import httpx
 
-from execution_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
+from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
 
 
 class NetBoxInventoryProvider:

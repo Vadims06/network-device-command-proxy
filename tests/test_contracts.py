@@ -1,4 +1,4 @@
-from execution_proxy.contracts import (
+from device_command_proxy.contracts import (
     DeviceCredentials,
     DeviceResult,
     ErrorCode,

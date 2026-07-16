@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from execution_proxy.contracts import DeviceCredentials
-from execution_proxy.ssh_auth import authentication_options
+from device_command_proxy.contracts import DeviceCredentials
+from device_command_proxy.ssh_auth import authentication_options
 
 
 def test_private_key_exists_with_mode_0600_only_inside_context(tmp_path):
