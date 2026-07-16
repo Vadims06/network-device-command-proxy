@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 
 import httpx
 
@@ -58,3 +59,14 @@ def test_execute_requires_static_bearer_token_and_returns_stable_contract():
             }
         ],
     }
+
+
+def test_execute_endpoint_is_sync_so_fastapi_runs_it_in_the_threadpool():
+    # A coroutine endpoint would block the event loop for the full
+    # executor.execute() wait, freezing every concurrent request.
+    app = create_app(Executor(), "mcp-to-proxy-token")
+    execute_route = next(
+        route for route in app.routes if getattr(route, "path", None) == "/v1/execute"
+    )
+
+    assert not inspect.iscoroutinefunction(execute_route.endpoint)

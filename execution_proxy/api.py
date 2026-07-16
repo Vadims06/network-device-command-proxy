@@ -33,8 +33,11 @@ def create_app(executor: BatchExecutor, bearer_token: str) -> FastAPI:
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    # plain def: FastAPI runs sync handlers in its threadpool, so the
+    # blocking executor.execute() wait (up to 30s) does not freeze the
+    # event loop for other concurrent requests.
     @app.post("/v1/execute", dependencies=[Depends(authorize)])
-    async def execute(request: ExecuteRequest) -> dict[str, Any]:
+    def execute(request: ExecuteRequest) -> dict[str, Any]:
         try:
             results = executor.execute(
                 OperationRequest(
