@@ -9,7 +9,7 @@ from scrapli.driver.generic import GenericDriver
 
 from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
 from device_command_proxy.platforms.base import DeviceAdapter
-from device_command_proxy.ssh_auth import authentication_options
+from device_command_proxy.ssh_auth import authentication_options, ensure_host_key
 
 
 @contextmanager
@@ -17,9 +17,10 @@ def create_frr_driver(
     device: DeviceProfile,
     credentials: DeviceCredentials,
     *,
-    known_hosts_file: str = "/etc/execution-proxy/known_hosts",
+    known_hosts_file: str = "/var/lib/execution-proxy/known_hosts",
     private_key_directory: str = "/run/execution-proxy",
 ) -> Iterator[GenericDriver]:
+    ensure_host_key(device.host, device.port, known_hosts_file)
     with authentication_options(
         credentials,
         private_key_directory=private_key_directory,

@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir .
 RUN addgroup -g 2000 execution-proxy \
     && adduser -D -H -u 2000 -G execution-proxy execution-proxy \
     && install -d -o execution-proxy -g execution-proxy -m 0700 /run/execution-proxy \
+    && install -d -o execution-proxy -g execution-proxy -m 0700 /var/lib/execution-proxy \
     && chown -R execution-proxy:execution-proxy /app
 
 USER execution-proxy

@@ -4,8 +4,9 @@ from contextlib import nullcontext
 import pytest
 from scrapli.exceptions import ScrapliConnectionError
 
+from device_command_proxy.contracts import DeviceCredentials, DeviceProfile, ErrorCode, ExecutionError
+from device_command_proxy.platforms.junos import driver as junos_driver
 from device_command_proxy.platforms.junos.driver import JunosAdapter
-from device_command_proxy.contracts import ErrorCode, ExecutionError
 
 
 class FakeResponse:
@@ -280,3 +281,42 @@ def test_transport_failure_is_reported_as_device_unreachable():
         adapter.run("get_ospf_neighbors")
 
     assert raised_error.value.code == ErrorCode.DEVICE_UNREACHABLE
+
+
+def test_create_junos_driver_ensures_host_key_before_opening(monkeypatch):
+    call_order = []
+
+    def fake_ensure_host_key(host, port, known_hosts_file):
+        assert (host, port, known_hosts_file) == ("10.0.0.9", 22, "/tmp/known_hosts")
+        call_order.append("ensure_host_key")
+
+    class FakeJunosDriver:
+        def __init__(self, **_kwargs):
+            pass
+
+        def open(self):
+            call_order.append("open")
+
+        def isalive(self):
+            return False
+
+    monkeypatch.setattr(junos_driver, "ensure_host_key", fake_ensure_host_key)
+    monkeypatch.setattr(junos_driver, "JunosDriver", FakeJunosDriver)
+
+    device = DeviceProfile(
+        name="r1",
+        host="10.0.0.9",
+        port=22,
+        platform="junos",
+        credential_profile="default",
+    )
+    credentials = DeviceCredentials(
+        username="diag", authentication_type="password", password="secret"
+    )
+
+    with junos_driver.create_junos_driver(
+        device, credentials, known_hosts_file="/tmp/known_hosts"
+    ):
+        pass
+
+    assert call_order == ["ensure_host_key", "open"]
