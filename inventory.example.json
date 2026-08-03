@@ -1,0 +1,15 @@
+{
+  "router1": {
+    "host": "10.99.0.11",
+    "port": 22,
+    "platform": "frr",
+    "credential_profile": "prod-frr-readonly",
+    "interfaces": ["eth0", "eth1"]
+  },
+  "router2": {
+    "host": "10.99.0.12",
+    "platform": "junos",
+    "credential_profile": "prod-junos-readonly",
+    "interfaces": ["ge-0/0/0.0", "ge-0/0/1.0"]
+  }
+}

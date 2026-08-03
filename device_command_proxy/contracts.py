@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Mapping, Protocol
 
+from device_command_proxy.operation_types import AuthenticationType, ResultStatus
+
 
 class ErrorCode(StrEnum):
     INVALID_REQUEST = "invalid_request"
@@ -34,18 +36,23 @@ class DeviceProfile:
 @dataclass(frozen=True, repr=False)
 class DeviceCredentials:
     username: str
-    authentication_type: str
+    authentication_type: AuthenticationType
     password: str | None = None
     private_key: str | None = None
     private_key_passphrase: str | None = None
     ssh_certificate: str | None = None
 
     def __post_init__(self) -> None:
-        if self.authentication_type not in {"password", "private_key"}:
-            raise ValueError("authentication_type must be password or private_key")
-        if self.authentication_type == "password" and not self.password:
+        try:
+            authentication_type = AuthenticationType(self.authentication_type)
+        except ValueError as exception:
+            raise ValueError(
+                "authentication_type must be password or private_key"
+            ) from exception
+        object.__setattr__(self, "authentication_type", authentication_type)
+        if authentication_type is AuthenticationType.PASSWORD and not self.password:
             raise ValueError("password credentials require password")
-        if self.authentication_type == "private_key" and not self.private_key:
+        if authentication_type is AuthenticationType.PRIVATE_KEY and not self.private_key:
             raise ValueError("private_key credentials require private_key")
 
 
@@ -78,10 +85,11 @@ class DeviceResult:
     device: str
     operation: str
     platform: str
-    status: str
+    status: ResultStatus
     data: Mapping[str, Any] | None
     duration_ms: int
     error: OperationError | None = None
+    unsupported_fields: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = {
@@ -91,6 +99,7 @@ class DeviceResult:
             "status": self.status,
             "data": self.data,
             "duration_ms": self.duration_ms,
+            "unsupported_fields": list(self.unsupported_fields),
         }
         if self.error is None:
             return result
@@ -105,4 +114,3 @@ class ExecutionError(Exception):
     def __init__(self, code: ErrorCode, message: str):
         super().__init__(message)
         self.code = code
-

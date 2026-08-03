@@ -1,0 +1,13 @@
+services:
+  execution-proxy:
+    build: .
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./inventory.json:/etc/execution-proxy/inventory.json:ro
+      - execution-proxy-runtime:/app/runtime
+    restart: unless-stopped
+
+volumes:
+  execution-proxy-runtime:

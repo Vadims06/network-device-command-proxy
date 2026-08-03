@@ -80,8 +80,9 @@ def test_neighbors_normalize_literal_frr_fixture():
         "neighbors": [
             {
                 "router_id": "10.10.10.3",
-                "state": "Full/-",
-                "role": "DROther",
+                "adjacency_state": "FULL",
+                "state_raw": "Full/-",
+                "role": "DR_OTHER",
                 "interface": "eth1",
                 "peer_address": "192.168.13.3",
                 "dead_time_ms": 39570,
@@ -114,6 +115,7 @@ def test_route_normalizes_literal_frr_fixture():
 
     assert adapter.run("get_route", prefix="10.10.10.6/32") == {
         "prefix": "10.10.10.6/32",
+        "matched_prefix": "10.10.10.6/32",
         "found": True,
         "routes": [
             {
@@ -212,3 +214,49 @@ def test_create_frr_driver_ensures_host_key_before_opening(monkeypatch):
         pass
 
     assert call_order == ["ensure_host_key", "open"]
+
+
+def test_role_is_derived_from_the_state_suffix_when_frr_omits_the_role_key():
+    # Releases without a separate `role` key still carry it in nbrState.
+    adapter = _adapter(
+        "show ip ospf neighbor json",
+        {
+            "ospfInstance": 1,
+            "neighbors": {
+                "10.10.10.3": [
+                    {
+                        "nbrState": "2-Way/DROther",
+                        "ifaceName": "eth1:192.168.13.1",
+                        "ifaceAddress": "192.168.13.3",
+                        "routerDeadIntervalTimerDueMsec": 39570,
+                    }
+                ]
+            },
+        },
+    )
+
+    neighbor = adapter.run("get_ospf_neighbors")["neighbors"][0]
+
+    assert neighbor["adjacency_state"] == "TWO_WAY"
+    assert neighbor["role"] == "DR_OTHER"
+
+
+def test_point_to_point_state_suffix_yields_no_role():
+    adapter = _adapter(
+        "show ip ospf neighbor json",
+        {
+            "ospfInstance": 1,
+            "neighbors": {
+                "10.10.10.3": [
+                    {
+                        "nbrState": "Full/-",
+                        "ifaceName": "eth1",
+                        "ifaceAddress": "192.168.13.3",
+                        "routerDeadIntervalTimerDueMsec": 39570,
+                    }
+                ]
+            },
+        },
+    )
+
+    assert adapter.run("get_ospf_neighbors")["neighbors"][0]["role"] is None
