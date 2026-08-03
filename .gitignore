@@ -1,3 +1,21 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+*.egg-info/
+venv/
+
+# Holds the bearer, NetBox and Vault tokens. The example file is the only
+# one that belongs in the repository.
+.env
+.env.*
+!.env.example
+
+# Local runtime configuration named by STATIC_INVENTORY_PATH / PROFILE_PATHS_FILE.
+# The *.example.json templates are the only ones that belong in the repository.
+inventory.json
+profile-paths.json
+
+# DEVICE_PRIVATE_KEY_FILE / DEVICE_SSH_CERTIFICATE_FILE default paths from
+# .env.example's quick-start example.
+id_ed25519
+id_ed25519-cert.pub

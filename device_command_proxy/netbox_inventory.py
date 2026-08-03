@@ -1,9 +1,8 @@
-"""Live NetBox inventory resolution with management-CIDR enforcement."""
+"""Live NetBox inventory resolution."""
 
 from __future__ import annotations
 
 import ipaddress
-from typing import Iterable
 
 import httpx
 
@@ -15,7 +14,6 @@ class NetBoxInventoryProvider:
         self,
         base_url: str,
         token: str,
-        management_cidrs: Iterable[str],
         *,
         timeout_sec: float = 3.0,
         client: httpx.Client | None = None,
@@ -27,11 +25,6 @@ class NetBoxInventoryProvider:
             timeout=timeout_sec,
         )
         self._owns_client = client is None
-        self._management_networks = tuple(
-            ipaddress.ip_network(cidr) for cidr in management_cidrs
-        )
-        if not self._management_networks:
-            raise ValueError("at least one management CIDR is required")
 
     def get_device(self, device_name: str) -> DeviceProfile:
         try:
@@ -86,8 +79,4 @@ class NetBoxInventoryProvider:
         if not isinstance(address, str):
             raise ValueError("device has no primary IPv4 address")
         host = ipaddress.ip_interface(address).ip
-        if host.is_loopback or host.is_link_local or host.is_multicast:
-            raise ValueError("unsafe management address")
-        if not any(host in network for network in self._management_networks):
-            raise ValueError("management address is outside configured CIDRs")
         return str(host)

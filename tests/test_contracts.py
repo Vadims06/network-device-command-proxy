@@ -33,6 +33,7 @@ def test_success_result_matches_normalized_contract():
             "addresses": ["10.0.23.2/30"],
         },
         "duration_ms": 184,
+        "unsupported_fields": [],
     }
 
 
@@ -57,6 +58,7 @@ def test_error_result_is_structured_and_has_no_raw_output():
         "status": "error",
         "data": None,
         "duration_ms": 5000,
+        "unsupported_fields": [],
         "error": {
             "code": "device_unreachable",
             "message": "device unreachable",

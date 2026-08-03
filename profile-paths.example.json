@@ -1,0 +1,4 @@
+{
+  "prod-frr-readonly": "network/prod/frr-readonly",
+  "prod-junos-readonly": "network/prod/junos-readonly"
+}

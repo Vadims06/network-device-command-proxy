@@ -13,6 +13,14 @@ dependencies = [
     "uvicorn==0.51.0",
 ]
 
+[project.optional-dependencies]
+# jsonschema checks the generated OpenAPI response schemas independently of
+# the runtime Pydantic validation.
+test = [
+    "pytest",
+    "jsonschema",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
