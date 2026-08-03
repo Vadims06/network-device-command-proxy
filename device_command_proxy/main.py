@@ -1,4 +1,4 @@
-"""Environment wiring for the device-command-proxy service."""
+"""Environment wiring for the network-device-command-proxy service."""
 
 from __future__ import annotations
 

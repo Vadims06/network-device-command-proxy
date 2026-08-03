@@ -1,4 +1,4 @@
-# device-command-proxy
+# network-device-command-proxy
 
 Authenticated, read-only REST access to live network-device state for AI agents
 and automation tools. Callers select a named operation; they never send a raw
@@ -306,7 +306,7 @@ On Junos, use a read-only login class.
 
 ## Development
 
-The agent uses [device-command-mcp](https://github.com/Vadims06/device-command-mcp)
+The agent uses [network-device-command-mcp](https://github.com/Vadims06/network-device-command-mcp)
 as its MCP-facing adapter. The MCP server maps each tool to one operation here;
 it owns MCP authentication, while this proxy owns inventory, credentials, SSH,
 validation and vendor normalization. Read both READMEs when changing the
