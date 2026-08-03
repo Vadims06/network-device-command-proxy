@@ -37,7 +37,7 @@ def test_configured_device_is_returned_with_defaults_applied():
     assert device.port == 22
     assert device.platform == "frr"
     assert device.credential_profile == "demo-frr-readonly"
-    assert device.interfaces == frozenset({"eth0", "eth1"})
+    assert device.interfaces == frozenset()
 
 
 def test_port_defaults_to_22_when_omitted():
@@ -67,14 +67,6 @@ def test_public_management_address_is_supported():
 def test_missing_required_field_fails_at_startup():
     devices = _devices()
     del devices["router1"]["platform"]
-
-    with pytest.raises(ValueError):
-        _provider(devices)
-
-
-def test_scalar_interfaces_value_fails_at_startup_instead_of_being_split_into_chars():
-    devices = _devices()
-    devices["router1"]["interfaces"] = "eth0"
 
     with pytest.raises(ValueError):
         _provider(devices)
@@ -181,15 +173,6 @@ def test_device_name_the_request_path_would_reject_fails_at_startup(device_name)
         _provider({device_name: _devices()["router1"]})
 
     assert raised_error.value.code == ErrorCode.INVALID_REQUEST
-
-
-@pytest.mark.parametrize("interface", ["", "eth0 | more", "eth0; reboot", "eth0`id`"])
-def test_interface_name_the_request_path_would_reject_fails_at_startup(interface):
-    devices = _devices()
-    devices["router1"]["interfaces"] = ["eth0", interface]
-
-    with pytest.raises(ValueError, match="unusable interface names"):
-        _provider(devices)
 
 
 def test_an_ipv4_mapped_host_is_stored_as_plain_ipv4():

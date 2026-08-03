@@ -13,27 +13,27 @@ from device_command_proxy.contracts import ErrorCode
 
 
 class AdjacencyState(StrEnum):
-    DOWN = "DOWN"
-    ATTEMPT = "ATTEMPT"
-    INIT = "INIT"
-    TWO_WAY = "TWO_WAY"
-    EXSTART = "EXSTART"
-    EXCHANGE = "EXCHANGE"
-    LOADING = "LOADING"
-    FULL = "FULL"
+    DOWN = "down"
+    ATTEMPT = "attempt"
+    INIT = "init"
+    TWO_WAY = "two_way"
+    EXSTART = "exstart"
+    EXCHANGE = "exchange"
+    LOADING = "loading"
+    FULL = "full"
 
 
 class NetworkType(StrEnum):
-    BROADCAST_NETWORK = "BROADCAST_NETWORK"
-    POINT_TO_POINT_NETWORK = "POINT_TO_POINT_NETWORK"
-    NON_BROADCAST_NETWORK = "NON_BROADCAST_NETWORK"
-    POINT_TO_MULTIPOINT_NETWORK = "POINT_TO_MULTIPOINT_NETWORK"
+    BROADCAST_NETWORK = "broadcast_network"
+    POINT_TO_POINT_NETWORK = "point_to_point_network"
+    NON_BROADCAST_NETWORK = "non_broadcast_network"
+    POINT_TO_MULTIPOINT_NETWORK = "point_to_multipoint_network"
 
 
 class RouterRole(StrEnum):
-    DR = "DR"
-    BDR = "BDR"
-    DR_OTHER = "DR_OTHER"
+    DR = "dr"
+    BDR = "bdr"
+    DR_OTHER = "dr_other"
 
 
 class InterfaceStatus(BaseModel):

@@ -80,9 +80,9 @@ def test_neighbors_normalize_literal_frr_fixture():
         "neighbors": [
             {
                 "router_id": "10.10.10.3",
-                "adjacency_state": "FULL",
-                "state_raw": "Full/-",
-                "role": "DR_OTHER",
+                "adjacency_state": "full",
+                "state_raw": "full/-",
+                "role": "dr_other",
                 "interface": "eth1",
                 "peer_address": "192.168.13.3",
                 "dead_time_ms": 39570,
@@ -237,8 +237,8 @@ def test_role_is_derived_from_the_state_suffix_when_frr_omits_the_role_key():
 
     neighbor = adapter.run("get_ospf_neighbors")["neighbors"][0]
 
-    assert neighbor["adjacency_state"] == "TWO_WAY"
-    assert neighbor["role"] == "DR_OTHER"
+    assert neighbor["adjacency_state"] == "two_way"
+    assert neighbor["role"] == "dr_other"
 
 
 def test_point_to_point_state_suffix_yields_no_role():

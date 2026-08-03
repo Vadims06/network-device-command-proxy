@@ -29,7 +29,7 @@ def test_only_known_argument_keys_are_recorded(caplog):
         )
 
     entry = json.loads(caplog.messages[0])
-    assert entry["arguments"] == {"interface": "eth0"}
+    assert entry["arguments"] == {"interface": "[redacted]"}
     assert "password" not in json.dumps(entry)
     assert "supersecret" not in json.dumps(entry)
 
@@ -42,23 +42,16 @@ def test_legitimate_argument_keys_are_recorded(caplog, key, value):
         audit.record(_result(), request_id="", arguments={key: value})
 
     entry = json.loads(caplog.messages[0])
-    assert entry["arguments"] == {key: value}
+    assert entry["arguments"] == {key: "[redacted]"}
 
 
-@pytest.mark.parametrize(
-    "key, value", [("interface", "not a valid name!"), ("prefix", "supersecret")]
-)
-def test_a_value_that_fails_its_own_keys_validity_check_is_not_recorded(
-    caplog, key, value
-):
-    # An allowed key does not make its value trustworthy: {"prefix":
-    # "supersecret"} is exactly what validate_arguments() would reject, and
-    # the rejection must not be the only thing stopping it from being logged.
+@pytest.mark.parametrize("key, value", [("interface", "SuperSecretPassword"), ("prefix", "supersecret")])
+def test_argument_values_are_never_recorded(caplog, key, value):
     with caplog.at_level("INFO", logger="device_command_proxy.audit"):
         audit.record(_result(), request_id="req-1", arguments={key: value})
 
     entry = json.loads(caplog.messages[0])
-    assert entry["arguments"] == {}
+    assert entry["arguments"] == {key: "[redacted]"}
     assert value not in json.dumps(entry)
 
 

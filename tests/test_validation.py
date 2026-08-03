@@ -57,15 +57,18 @@ def test_plural_ospf_interfaces_operation_takes_no_arguments():
         validate_arguments("get_ospf_interfaces", {"interface": "eth0"}, DEVICE)
 
 
-def test_interface_must_be_in_live_device_inventory():
-    with pytest.raises(ExecutionError) as raised_error:
-        validate_arguments(
-            "get_interface_status",
-            {"interface": "eth9"},
-            DEVICE,
-        )
-
-    assert raised_error.value.code == ErrorCode.INVALID_REQUEST
+def test_interface_need_not_be_listed_in_inventory():
+    assert validate_arguments(
+        "get_interface_status",
+        {"interface": "eth9"},
+        DeviceProfile(
+            name="router1",
+            host="172.20.20.11",
+            port=22,
+            platform="frr",
+            credential_profile="demo-frr-readonly",
+        ),
+    ) == {"interface": "eth9"}
 
 
 def test_prefix_is_canonicalized_without_accepting_extra_arguments():

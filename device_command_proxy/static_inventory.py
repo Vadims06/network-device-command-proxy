@@ -13,10 +13,7 @@ from typing import Any, Iterable, Mapping
 
 from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
 from device_command_proxy.json_files import reject_duplicate_keys
-from device_command_proxy.validation import (
-    is_valid_interface_name,
-    validate_devices,
-)
+from device_command_proxy.validation import validate_devices
 
 
 _KNOWN_ENTRY_FIELDS = frozenset(
@@ -93,26 +90,12 @@ def _parse_device(
         host = ipaddress.ip_address(_valid_string(entry["host"], "host"))
         if isinstance(host, ipaddress.IPv6Address):
             host = host.ipv4_mapped or host
-        interfaces = entry.get("interfaces", [])
-        if not isinstance(interfaces, list) or not all(
-            isinstance(interface, str) for interface in interfaces
-        ):
-            raise TypeError("interfaces must be a list of interface-name strings")
-        # A name the request path would reject is unusable no matter what it
-        # is listed against, so it fails here instead of on every request.
-        unusable = [
-            interface for interface in interfaces
-            if not is_valid_interface_name(interface)
-        ]
-        if unusable:
-            raise ValueError(f"unusable interface names: {unusable}")
         return DeviceProfile(
             name=name,
             host=str(host),
             port=_valid_port(entry.get("port", 22)),
             platform=_valid_name(entry["platform"], "platform", supported_platforms),
             credential_profile=_credential_profile(entry, credential_profiles),
-            interfaces=frozenset(interfaces),
         )
     except KeyError as exception:
         raise ValueError(

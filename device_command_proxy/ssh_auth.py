@@ -41,16 +41,17 @@ def verify_prerequisites(
     The private-key directory is checked when the caller has selected
     environment-backed private-key authentication.
     """
-    known_hosts_file = known_hosts_file or runtime_path_from_environment(
-        KNOWN_HOSTS_FILE_ENV
-    )
-    # ssh-keyscan being present is not proof that Scrapli's system transport
-    # can run: it invokes the "ssh" binary directly, and an environment can
-    # have one openssh-client tool without the other.
+    known_hosts_file = known_hosts_file or os.environ.get(KNOWN_HOSTS_FILE_ENV, "").strip() or None
+    # ssh-keyscan is needed only when the operator opts into host-key pinning.
+    # Scrapli's system transport still invokes the ssh binary in either mode.
     if shutil.which(SSH_CLIENT) is None:
         raise ValueError(
             f"{SSH_CLIENT} is required to connect to devices: install openssh-client"
         )
+    if known_hosts_file is None:
+        if private_key_directory is not None:
+            _verify_writable(Path(private_key_directory), "ephemeral private keys")
+        return
     if shutil.which(HOST_KEY_SCANNER) is None:
         raise ValueError(
             f"{HOST_KEY_SCANNER} is required to learn device host keys: "

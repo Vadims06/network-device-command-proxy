@@ -13,23 +13,9 @@ from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from device_command_proxy.contracts import DeviceResult
-from device_command_proxy.validation import (
-    LOGGABLE_ARGUMENT_KEYS,
-    is_valid_interface_name,
-    is_valid_prefix,
-)
+from device_command_proxy.validation import LOGGABLE_ARGUMENT_KEYS
 
 _logger = logging.getLogger("device_command_proxy.audit")
-
-# One predicate per loggable key: a value that fails its own key's check is
-# exactly the case validate_arguments() would reject too, so logging it
-# verbatim would put an unvalidated (and possibly attacker-supplied) string
-# in the log under the guise of a real argument.
-_ARGUMENT_VALIDATORS = {
-    "interface": is_valid_interface_name,
-    "prefix": is_valid_prefix,
-}
-
 
 def _logged_request_id(request_id: str) -> str:
     if not request_id:
@@ -48,16 +34,12 @@ def record(
         "request_id": _logged_request_id(request_id),
         "device": result.device,
         "operation": result.operation,
-        # Filtered to the known-legitimate keys with values that pass that
-        # key's own validity check, not logged verbatim: an authenticated
-        # caller can put anything under an allowed key (e.g.
-        # {"prefix": "supersecret"}), and validate_arguments() rejecting the
-        # request does not stop this record from being written with whatever
-        # they sent.
+        # Keep argument names for operation visibility, but never copy values
+        # from an authenticated request into logs.
         "arguments": {
-            key: value
+            key: "[redacted]"
             for key, value in arguments.items()
-            if key in LOGGABLE_ARGUMENT_KEYS and _ARGUMENT_VALIDATORS[key](value)
+            if key in LOGGABLE_ARGUMENT_KEYS
         },
         "platform": result.platform,
         "duration_ms": result.duration_ms,

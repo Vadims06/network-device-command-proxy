@@ -24,14 +24,12 @@ def test_prerequisites_pass_when_the_scanner_and_directories_are_usable(
     assert (tmp_path / "hosts").is_dir()
 
 
-def test_runtime_paths_are_required_when_not_passed_explicitly(monkeypatch, tmp_path):
+def test_known_hosts_file_is_optional_when_not_passed_explicitly(monkeypatch, tmp_path):
     monkeypatch.setattr(ssh_auth.shutil, "which", lambda _name: "/usr/bin/ssh")
     monkeypatch.delenv(ssh_auth.KNOWN_HOSTS_FILE_ENV, raising=False)
     monkeypatch.delenv(ssh_auth.PRIVATE_KEY_DIRECTORY_ENV, raising=False)
 
-    with pytest.raises(ValueError, match=ssh_auth.KNOWN_HOSTS_FILE_ENV):
-        ssh_auth.verify_prerequisites(
-        )
+    ssh_auth.verify_prerequisites()
 
 
 def test_runtime_paths_can_be_loaded_from_environment(monkeypatch, tmp_path):

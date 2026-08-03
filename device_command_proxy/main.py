@@ -26,7 +26,7 @@ def build_app():
     # private-key directory is needed is already known here. Passed on to
     # build_credentials() below rather than resolved twice.
     device_credentials = build_env_credentials()
-    # Before anything else: a missing ssh-keyscan or an unwritable runtime
+    # Before anything else: missing SSH tooling or an unwritable runtime
     # directory would otherwise surface as device_unreachable on every device.
     private_key_directory = None
     if (

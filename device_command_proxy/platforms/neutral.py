@@ -92,4 +92,4 @@ def network_type(raw_network_type: Any) -> NetworkType | None:
 def raw_text(value: Any) -> str | None:
     if value is None:
         return None
-    return str(value)
+    return str(value).lower()

@@ -100,8 +100,8 @@ def test_neighbors_normalize_literal_junos_fixture():
         "neighbors": [
             {
                 "router_id": "10.10.10.3",
-                "adjacency_state": "FULL",
-                "state_raw": "Full",
+                "adjacency_state": "full",
+                "state_raw": "full",
                 "role": None,
                 "interface": "ge-0/0/1.0",
                 "peer_address": "192.168.13.3",
@@ -151,7 +151,7 @@ def test_route_normalizes_literal_junos_fixture():
         "found": True,
         "routes": [
             {
-                "protocol": "OSPF",
+                "protocol": "ospf",
                 "selected": True,
                 "distance": 10,
                 "metric": 20,
@@ -239,8 +239,8 @@ def test_ospf_interface_normalizes_literal_junos_fixture():
                 "up": True,
                 "enabled": True,
                 "state": "PtToPt",
-                "network_type": "POINT_TO_POINT_NETWORK",
-                "network_type_raw": "P2P",
+                "network_type": "point_to_point_network",
+                "network_type_raw": "p2p",
                 "area": "0.0.0.0",
                 "cost": 100,
                 "hello_interval_ms": 10000,

@@ -16,8 +16,8 @@ from device_command_proxy.operations import (
 
 MAX_DEVICES = 20
 # Slash and colon are part of ordinary interface names on several platforms
-# (ge-0/0/0.0, xe-0/0/0:1). Membership in the device's inventoried interface
-# list, not this pattern, is what keeps an argument from reaching the CLI.
+# (ge-0/0/0.0, xe-0/0/0:1). The pattern is the safety boundary before the
+# validated name reaches the fixed vendor command.
 INTERFACE_PATTERN = re.compile(r"^[a-zA-Z0-9_.:/-]+$")
 # The only argument keys any operation ever accepts. Shared with audit.py so
 # a caller cannot get an arbitrary key logged verbatim by attaching it to a
@@ -97,11 +97,6 @@ def validate_arguments(
         interface_name = arguments["interface"]
         if not is_valid_interface_name(interface_name):
             raise ExecutionError(ErrorCode.INVALID_REQUEST, "invalid interface")
-        if interface_name not in device.interfaces:
-            raise ExecutionError(
-                ErrorCode.INVALID_REQUEST,
-                "interface is not present on device",
-            )
         return {"interface": interface_name}
 
     if specification.argument_kind is not ArgumentKind.PREFIX:

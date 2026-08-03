@@ -119,7 +119,7 @@ def test_execution_emits_one_audit_record_per_device_without_secrets(caplog):
     assert by_device["router1"]["status"] == "success"
     assert by_device["router1"]["request_id"] == hashlib.sha256(b"req-1").hexdigest()
     assert by_device["router1"]["operation"] == "get_interface_status"
-    assert by_device["router1"]["arguments"] == {"interface": "eth1"}
+    assert by_device["router1"]["arguments"] == {"interface": "[redacted]"}
     assert by_device["missing"]["status"] == "error"
     assert by_device["missing"]["error_code"] == "device_not_found"
     for record in records:
@@ -128,7 +128,7 @@ def test_execution_emits_one_audit_record_per_device_without_secrets(caplog):
         assert "password" not in serialized
 
 
-def test_unvalidated_interface_values_are_not_written_to_the_audit_log(caplog):
+def test_interface_values_are_not_written_to_the_audit_log(caplog):
     executor = BatchExecutor(
         Inventory(),
         Credentials(),

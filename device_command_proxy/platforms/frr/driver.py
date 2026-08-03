@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+import os
 from typing import Any, Iterator
 
 from scrapli.driver.generic import GenericDriver
@@ -27,7 +28,6 @@ from device_command_proxy.schemas import (
 )
 from device_command_proxy.ssh_auth import (
     authentication_options,
-    runtime_path_from_environment,
     ensure_host_key,
     KNOWN_HOSTS_FILE_ENV,
 )
@@ -42,8 +42,13 @@ def create_frr_driver(
     private_key_directory: str | None = None,
 ) -> Iterator[GenericDriver]:
     if known_hosts_file is None:
-        known_hosts_file = runtime_path_from_environment(KNOWN_HOSTS_FILE_ENV)
-    ensure_host_key(device.host, device.port, known_hosts_file)
+        known_hosts_file = os.environ.get(KNOWN_HOSTS_FILE_ENV, "").strip() or None
+    driver_options = {
+        "auth_strict_key": known_hosts_file is not None,
+    }
+    if known_hosts_file is not None:
+        ensure_host_key(device.host, device.port, known_hosts_file)
+        driver_options["ssh_known_hosts_file"] = known_hosts_file
     with authentication_options(
         credentials,
         private_key_directory=private_key_directory,
@@ -52,14 +57,13 @@ def create_frr_driver(
             host=device.host,
             port=device.port,
             auth_username=credentials.username,
-            auth_strict_key=True,
-            ssh_known_hosts_file=known_hosts_file,
             timeout_socket=5.0,
             timeout_transport=10.0,
             timeout_ops=10.0,
             transport="system",
             comms_prompt_pattern=r"^[a-zA-Z0-9_.-]+[>#]\s*$",
             channel_log=False,
+            **driver_options,
             **authentication,
         )
         try:
