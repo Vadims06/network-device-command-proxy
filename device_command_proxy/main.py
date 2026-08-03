@@ -1,34 +1,52 @@
-"""Environment wiring for the execution-proxy service."""
+"""Environment wiring for the device-command-proxy service."""
 
 from __future__ import annotations
 
-import os
-
 from device_command_proxy.api import create_app
-from device_command_proxy.credential_provider import VaultCredentialProvider
+from device_command_proxy.config import (
+    build_credentials,
+    build_env_credentials,
+    build_inventory,
+    configure_logging,
+    required_env,
+)
 from device_command_proxy.executor import BatchExecutor
-from device_command_proxy.netbox_inventory import NetBoxInventoryProvider
-from device_command_proxy.platforms import PLATFORMS
-from device_command_proxy.vault_reader import VaultKv2Reader
-
-
-PROFILE_PATHS = {
-    "demo-frr-readonly": "network/demo/demo-lab/frr-readonly",
-    "demo-junos-readonly": "network/demo/demo-lab/junos-readonly",
-}
+from device_command_proxy.platforms import PLATFORMS, UNSUPPORTED_FIELDS
+from device_command_proxy.ssh_auth import (
+    PRIVATE_KEY_DIRECTORY_ENV,
+    runtime_path_from_environment,
+    verify_prerequisites,
+)
 
 
 def build_app():
-    inventory = NetBoxInventoryProvider(
-        os.environ["NETBOX_URL"],
-        os.environ["NETBOX_TOKEN"],
-        os.environ["MANAGEMENT_CIDRS"].split(","),
-    )
-    vault_reader = VaultKv2Reader()
-    credentials = VaultCredentialProvider(vault_reader.read, PROFILE_PATHS)
+    configure_logging()
+    # Resolved once, ahead of the SSH prerequisite check: env-credentials
+    # mode applies one DeviceCredentials to every device, so whether the
+    # private-key directory is needed is already known here. Passed on to
+    # build_credentials() below rather than resolved twice.
+    device_credentials = build_env_credentials()
+    # Before anything else: a missing ssh-keyscan or an unwritable runtime
+    # directory would otherwise surface as device_unreachable on every device.
+    private_key_directory = None
+    if (
+        device_credentials is not None
+        and device_credentials.authentication_type == "private_key"
+    ):
+        private_key_directory = runtime_path_from_environment(
+            PRIVATE_KEY_DIRECTORY_ENV
+        )
+    verify_prerequisites(private_key_directory=private_key_directory)
+    # Credentials first: which profile names an inventory may reference
+    # depends on the source, and the static inventory checks them while loading.
+    credentials, credential_profiles = build_credentials(device_credentials)
+    inventory = build_inventory(credential_profiles)
 
-    executor = BatchExecutor(inventory, credentials, PLATFORMS)
-    return create_app(executor, os.environ["EXECUTION_PROXY_TOKEN"])
+    executor = BatchExecutor(inventory, credentials, PLATFORMS, UNSUPPORTED_FIELDS)
+    return create_app(
+        executor,
+        required_env("EXECUTION_PROXY_TOKEN", "bearer token callers must present"),
+    )
 
 
 app = build_app()
