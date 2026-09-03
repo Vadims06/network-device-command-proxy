@@ -11,6 +11,7 @@ class Operation(StrEnum):
     GET_OSPF_INTERFACES = "get_ospf_interfaces"
     GET_OSPF_STATUS = "get_ospf_status"
     GET_ROUTE = "get_route"
+    GET_RSVP_LSPS = "get_rsvp_lsps"
 
 
 class ArgumentKind(StrEnum):

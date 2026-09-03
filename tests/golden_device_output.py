@@ -3,6 +3,14 @@
 Shared by the schema conformance test so every operation is exercised against
 real vendor output shapes rather than against hand-built neutral dicts.
 """
+import os
+
+_FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "fixtures", "cisco_iosxr")
+
+
+def _read_fixture(name):
+    with open(os.path.join(_FIXTURE_DIR, name)) as f:
+        return f.read()
 
 
 def _leaf(value):
@@ -227,6 +235,14 @@ JUNOS_OUTPUT = {
 JUNOS_OUTPUT["get_ospf_interfaces"] = JUNOS_OUTPUT["get_ospf_interface"]
 
 
+# IOS XR is the first text-format platform: the raw `show` output itself, not
+# a JSON dict. Reuses the fixture the parser's own tests and the Genie oracle
+# read, rather than a second copy of the same capture.
+IOSXR_OUTPUT = {
+    "get_rsvp_lsps": _read_fixture("show_rsvp_session_detail_headend.txt"),
+}
+
+
 # Arguments each operation needs, matching the fixtures above.
 OPERATION_ARGUMENTS = {
     "frr": {
@@ -239,4 +255,5 @@ OPERATION_ARGUMENTS = {
         "get_ospf_interface": {"interface": "ge-0/0/1.0"},
         "get_route": {"prefix": "10.10.10.6/32"},
     },
+    "iosxr": {},
 }

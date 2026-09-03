@@ -11,8 +11,14 @@ from device_command_proxy.operation_types import Operation
 from device_command_proxy.operations import OPERATION_SPECS
 from device_command_proxy.platforms import PLATFORMS, UNSUPPORTED_FIELDS
 from device_command_proxy.platforms.frr.driver import FrrAdapter
+from device_command_proxy.platforms.iosxr.driver import IosxrAdapter
 from device_command_proxy.platforms.junos.driver import JunosAdapter
-from tests.golden_device_output import FRR_OUTPUT, JUNOS_OUTPUT, OPERATION_ARGUMENTS
+from tests.golden_device_output import (
+    FRR_OUTPUT,
+    IOSXR_OUTPUT,
+    JUNOS_OUTPUT,
+    OPERATION_ARGUMENTS,
+)
 
 
 class FakeExecutor:
@@ -22,13 +28,21 @@ class FakeExecutor:
 
 SPECIFICATION = create_app(FakeExecutor(), "token").openapi()
 SCHEMAS = SPECIFICATION["components"]["schemas"]
-ADAPTERS = {"frr": FrrAdapter, "junos": JunosAdapter}
-PLATFORM_OUTPUT = {"frr": FRR_OUTPUT, "junos": JUNOS_OUTPUT}
+ADAPTERS = {"frr": FrrAdapter, "junos": JunosAdapter, "iosxr": IosxrAdapter}
+PLATFORM_OUTPUT = {"frr": FRR_OUTPUT, "junos": JUNOS_OUTPUT, "iosxr": IOSXR_OUTPUT}
+# Each adapter's own __init__ populates _operation_handlers with exactly the
+# operations that platform supports - a new platform with a different
+# operation set is picked up automatically, no hardcoded cross product.
 PLATFORM_OPERATIONS = [
     (platform, operation)
-    for platform in ADAPTERS
-    for operation in OPERATION_SPECS
+    for platform, adapter_cls in ADAPTERS.items()
+    for operation in adapter_cls(lambda: None)._operation_handlers
 ]
+# Platforms grouped by shared operation, used where a test needs a second
+# platform's output to compare against (test_both_platforms_produce_identical_key_sets).
+_PLATFORMS_BY_OPERATION: dict[Operation, list[str]] = {}
+for _platform, _operation in PLATFORM_OPERATIONS:
+    _PLATFORMS_BY_OPERATION.setdefault(_operation, []).append(_platform)
 
 
 class FakeDriver:
@@ -36,9 +50,8 @@ class FakeDriver:
         self._payload = payload
 
     def send_command(self, _command):
-        return type(
-            "FakeResponse", (), {"result": json.dumps(self._payload), "failed": False}
-        )()
+        result = self._payload if isinstance(self._payload, str) else json.dumps(self._payload)
+        return type("FakeResponse", (), {"result": result, "failed": False})()
 
 
 def _run(platform: str, operation: Operation):
@@ -73,8 +86,12 @@ def test_driver_output_validates_against_generated_openapi(platform, operation):
 
 @pytest.mark.parametrize("platform,operation", PLATFORM_OPERATIONS)
 def test_both_platforms_produce_identical_key_sets(platform, operation):
+    reference_platform = _PLATFORMS_BY_OPERATION[operation][0]
+    if reference_platform == platform:
+        pytest.skip(f"{operation.value} has only one platform so far ({platform})")
+
     assert _key_shape(_run(platform, operation)) == _key_shape(
-        _run("frr", operation)
+        _run(reference_platform, operation)
     )
 
 
@@ -203,8 +220,9 @@ def test_success_envelope_requires_data_without_error():
 def test_registry_covers_every_registered_platform_and_operation():
     assert set(ADAPTERS) == set(PLATFORMS)
     assert set(OPERATION_SPECS) == set(Operation)
-    for platform in PLATFORM_OUTPUT:
-        assert set(PLATFORM_OUTPUT[platform]) == {operation.value for operation in Operation}
+    for platform, adapter_cls in ADAPTERS.items():
+        supported = {op.value for op in adapter_cls(lambda: None)._operation_handlers}
+        assert set(PLATFORM_OUTPUT[platform]) == supported
 
 
 @pytest.mark.parametrize("platform", ["frr", "junos"])

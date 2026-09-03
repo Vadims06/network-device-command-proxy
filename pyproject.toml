@@ -20,6 +20,14 @@ test = [
     "pytest",
     "jsonschema",
 ]
+# Genie is a test oracle only, never a runtime dependency (see
+# docs/rsvp-lsp-schema-freeze.md) - kept out of `test` so a normal test run
+# never installs it.
+genie = [
+    "pyats",
+    "genie",
+    "genie.libs.parser",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

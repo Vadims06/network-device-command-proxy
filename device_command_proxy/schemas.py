@@ -146,6 +146,82 @@ class RouteLookup(BaseModel):
     routes: list[Route]
 
 
+class RsvpLabel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    interface: str | None
+    label: str | None
+
+
+class RsvpExplicitRouteHop(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    path_status: Literal["strict", "loose"]
+    route_address: str
+
+
+class RsvpRecordRouteFlags(BaseModel):
+    """Decoded record-route address flags (RFC 3209 + a Cisco node-id bit).
+    Bit mapping is open, see docs/rsvp-lsp-schema-freeze.md."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    local_protection_available: bool
+    local_protection_in_use: bool
+    soft_preempt: bool
+    local_node_protection: bool
+
+
+class RsvpRecordRouteHop(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    address: str | None
+    label_out: str | None
+    flags: RsvpRecordRouteFlags | None
+    flags_raw: str | None
+
+
+class RsvpReservation(BaseModel):
+    """Tspec (requested) or Fspec (signaled). average_rate's unit is
+    unverified: every available fixture reads avg_rate=0."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    average_rate: float
+    burst: float
+    burst_unit: str
+    peak_rate: float
+
+
+class RsvpSession(BaseModel):
+    """One RSVP-TE session as this device sees it. No role field: role
+    (ingress/transit/egress) needs the queried device's own router-id, which
+    is knowledge the proxy does not have - the caller
+    derives it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    destination: str
+    tunnel_id: str
+    head_end: str
+    lsp_id: str
+    tunnel_name: str
+    in_label: RsvpLabel
+    incoming_address: str | None
+    explicit_route: list[RsvpExplicitRouteHop]
+    tspec: RsvpReservation
+    out_label: RsvpLabel
+    frr_out_label: RsvpLabel
+    record_route: list[RsvpRecordRouteHop]
+    fspec: RsvpReservation
+
+
+class RsvpLspInventory(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    sessions: list[RsvpSession]
+
+
 class OperationErrorModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -230,6 +306,13 @@ class SuccessRouteResultModel(_DeviceResultBase):
     error: None = None
 
 
+class SuccessRsvpLspsResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_RSVP_LSPS]
+    status: Literal[ResultStatus.SUCCESS]
+    data: RsvpLspInventory
+    error: None = None
+
+
 DeviceSuccessResultModel = RootModel[
     Annotated[
         Union[
@@ -240,6 +323,7 @@ DeviceSuccessResultModel = RootModel[
             SuccessOspfInterfaceResultModel,
             SuccessOspfStatusResultModel,
             SuccessRouteResultModel,
+            SuccessRsvpLspsResultModel,
         ],
         Field(discriminator="operation"),
     ]

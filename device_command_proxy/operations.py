@@ -12,6 +12,7 @@ from device_command_proxy.schemas import (
     OspfNeighbors,
     OspfStatus,
     RouteLookup,
+    RsvpLspInventory,
 )
 from device_command_proxy.operation_types import ArgumentKind, Operation
 
@@ -44,6 +45,9 @@ OPERATION_SPECS = {
     ),
     Operation.GET_ROUTE: OperationSpec(
         Operation.GET_ROUTE, ArgumentKind.PREFIX, RouteLookup
+    ),
+    Operation.GET_RSVP_LSPS: OperationSpec(
+        Operation.GET_RSVP_LSPS, ArgumentKind.NONE, RsvpLspInventory
     ),
 }
 

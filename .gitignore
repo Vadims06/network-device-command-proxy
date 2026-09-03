@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 venv/
+venv312/
 
 # Holds the bearer, NetBox and Vault tokens. The example file is the only
 # one that belongs in the repository.
