@@ -29,6 +29,9 @@ genie = [
     "genie.libs.parser",
 ]
 
+[tool.setuptools.packages.find]
+include = ["device_command_proxy*"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
