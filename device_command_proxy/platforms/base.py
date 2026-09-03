@@ -8,7 +8,7 @@ from enum import StrEnum
 from typing import Any, Callable
 
 from pydantic import BaseModel, ValidationError
-from scrapli.exceptions import ScrapliException
+from scrapli.exceptions import ScrapliAuthenticationFailed, ScrapliException
 
 from device_command_proxy.contracts import ErrorCode, ExecutionError
 from device_command_proxy.operation_types import Operation
@@ -64,7 +64,7 @@ class DeviceAdapter:
                 type(exception).__name__,
             )
             raise ExecutionError(
-                ErrorCode.INTERNAL_ERROR,
+                ErrorCode.PARSE_ERROR,
                 "device returned an invalid response",
             ) from exception
 
@@ -77,6 +77,11 @@ class DeviceAdapter:
         try:
             with self._driver_factory() as driver:
                 response = driver.send_command(command)
+        except ScrapliAuthenticationFailed as exception:
+            _logger.warning("device authentication failed: %s", exception)
+            raise ExecutionError(
+                ErrorCode.AUTHENTICATION_FAILED, "device rejected the credentials"
+            ) from exception
         except (ScrapliException, OSError) as exception:
             _logger.warning(
                 "device connection failed: %s: %s",
@@ -88,7 +93,7 @@ class DeviceAdapter:
             ) from exception
 
         if response.failed:
-            raise ExecutionError(ErrorCode.DEVICE_UNREACHABLE, "device command failed")
+            raise ExecutionError(ErrorCode.COMMAND_FAILED, "device command failed")
         if len(response.result) > MAX_OUTPUT_BYTES:
             raise ExecutionError(
                 ErrorCode.OUTPUT_TOO_LARGE,

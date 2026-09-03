@@ -246,7 +246,10 @@ returned as supplied by the device and are not case-normalized.
 
 | Code | Meaning |
 |---|---|
-| `device_unreachable` | SSH, authentication, or command failure |
+| `device_unreachable` | Transport failure: SSH connect/session error |
+| `authentication_failed` | The device rejected the credentials |
+| `command_failed` | The device was reached, but the command errored or is unsupported on this release |
+| `parse_error` | Output was retrieved but could not be parsed into the model |
 | `invalid_request` | Invalid operation arguments, often an unlisted interface |
 | `unsupported_operation` | Driver does not implement the operation |
 | `device_not_found` | Device is absent from inventory |
@@ -256,11 +259,13 @@ returned as supplied by the device and are not case-normalized.
 | `queue_full` | Service is at capacity |
 | `output_too_large` | Device output exceeded 1 MB |
 | `inventory_unavailable` | NetBox did not respond |
-| `internal_error` | Driver or parsing failure; details are in logs |
+| `internal_error` | An error outside the above categories; details are in logs |
 
 Callers should branch on `error.code`, not on the human-readable message.
-For `device_unreachable`, inspect the warning log: the API deliberately keeps
-the public error code neutral.
+For `device_unreachable`, `authentication_failed`, `command_failed` and
+`internal_error`, inspect the warning log: the API deliberately keeps the
+public error code neutral. There is no `partial_parse` code: a record parsed
+with fields missing is a success with nulls, expressed by `unsupported_fields`.
 
 ## SSH host keys
 
