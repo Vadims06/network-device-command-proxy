@@ -219,9 +219,54 @@ not need a token.
 | `get_interface_status` | `interface` | Admin/oper state, addresses, MTU, speed |
 | `get_ospf_status` | none | Router ID and area counters |
 | `get_route` | `prefix` | Matching routes and next hops |
+| `get_rsvp_lsps` | none | RSVP-TE sessions (`show rsvp session detail`, IOS XR) |
+| `get_vrf_detail` | none | VRF inventory (`show vrf all detail`, IOS XR) |
 
-The Pydantic response models are the public contract. Fields unavailable on a
-platform are `null` and listed in `unsupported_fields`.
+### The response models are the contract
+
+- `operations.py` binds each operation to exactly one `response_model`.
+- `schemas.py` holds a union of per-operation result models discriminated by
+  the `operation` field, so `data` is typed per operation, never a bare `dict`.
+- `/openapi.json` and `/docs` are unauthenticated and expose no device data,
+  so a user who runs only the proxy reads the full response structure of
+  every operation from their own instance - the machine-readable form of
+  the contract above.
+- `unsupported_fields` (backed by each platform's `UNSUPPORTED_FIELDS` map)
+  says what a vendor can never report, reportable even when the command
+  failed and no adapter was ever built. A field a vendor cannot fill is
+  `null` plus `unsupported_fields`, never omitted and never invented.
+- `tests/test_openapi_conformance.py` ties driver output, the public model
+  and the generated OpenAPI together, so the published structure cannot
+  drift from what a driver actually returns.
+
+### Adding a platform
+
+Every file a new vendor touches, in order:
+
+1. `operation_types.Operation` - only if the vendor brings a new operation.
+2. `schemas.py` - the response model and its entry in the discriminated union.
+3. `operations.py` - the `OperationSpec` binding operation to model.
+4. `platforms/<vendor>/driver.py` - Scrapli driver factory, `create_adapter`,
+   the adapter class with one handler per supported operation, and
+   `UNSUPPORTED_FIELDS` for what this vendor cannot report.
+5. `platforms/__init__.py` - registration in `PLATFORMS` and `UNSUPPORTED_FIELDS`.
+6. `tests/golden_device_output.py` - captured device output for the new platform.
+7. `tests/test_openapi_conformance.py` - the platform is picked up
+   automatically once its output and adapter are registered; each adapter's
+   own `_operation_handlers` decides which operations it is tested against,
+   so a platform never needs to support every registered operation.
+8. This README - the Operations table row, and the device requirements
+   section (what login class or shell the vendor needs).
+
+Two invariants a new platform must not break: no raw CLI argument ever
+reaches the API, and the response model is the contract - see "The response
+models are the contract" above.
+
+See `platforms/iosxr/` for a complete example: the first text-format platform
+(`OutputFormat.TEXT`, both existing platforms before it consume structured
+JSON), including a from-scratch line parser cross-checked against an
+independent oracle (`docs/rsvp-lsp-schema-freeze.md`,
+`tests/test_rsvp_parser_genie_oracle.py`).
 
 ### live smoke test
 
@@ -308,6 +353,10 @@ usermod -s /usr/bin/vtysh diag
 ```
 
 On Junos, use a read-only login class.
+
+On IOS XR, a user with the `operator` task group can run the `show` commands
+this proxy uses; no `crypto`/`root-system` privilege is needed for read-only
+operations.
 
 ## Development
 
