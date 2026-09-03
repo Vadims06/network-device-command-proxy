@@ -240,6 +240,7 @@ JUNOS_OUTPUT["get_ospf_interfaces"] = JUNOS_OUTPUT["get_ospf_interface"]
 # read, rather than a second copy of the same capture.
 IOSXR_OUTPUT = {
     "get_rsvp_lsps": _read_fixture("show_rsvp_session_detail_headend.txt"),
+    "get_vrf_detail": _read_fixture("show_vrf_all_detail.txt"),
 }
 
 

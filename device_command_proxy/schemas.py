@@ -222,6 +222,30 @@ class RsvpLspInventory(BaseModel):
     sessions: list[RsvpSession]
 
 
+class VrfFamily(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    afi: str
+    safi: str
+    import_route_targets: list[str]
+    export_route_targets: list[str]
+
+
+class VrfDetail(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    route_distinguisher: str | None
+    interfaces: list[str]
+    families: list[VrfFamily]
+
+
+class VrfInventory(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    vrfs: list[VrfDetail]
+
+
 class OperationErrorModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -313,6 +337,13 @@ class SuccessRsvpLspsResultModel(_DeviceResultBase):
     error: None = None
 
 
+class SuccessVrfDetailResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_VRF_DETAIL]
+    status: Literal[ResultStatus.SUCCESS]
+    data: VrfInventory
+    error: None = None
+
+
 DeviceSuccessResultModel = RootModel[
     Annotated[
         Union[
@@ -324,6 +355,7 @@ DeviceSuccessResultModel = RootModel[
             SuccessOspfStatusResultModel,
             SuccessRouteResultModel,
             SuccessRsvpLspsResultModel,
+            SuccessVrfDetailResultModel,
         ],
         Field(discriminator="operation"),
     ]

@@ -15,7 +15,8 @@ from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
 from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms.base import DeviceAdapter, OutputFormat
 from device_command_proxy.platforms.iosxr.rsvp_parser import parse_rsvp_session_detail
-from device_command_proxy.schemas import RsvpLspInventory
+from device_command_proxy.platforms.iosxr.vrf_parser import parse_vrf_all_detail
+from device_command_proxy.schemas import RsvpLspInventory, VrfInventory
 from device_command_proxy.ssh_auth import (
     authentication_options,
     ensure_host_key,
@@ -81,6 +82,7 @@ class IosxrAdapter(DeviceAdapter):
         super().__init__(driver_factory)
         self._operation_handlers = {
             Operation.GET_RSVP_LSPS: self._get_rsvp_lsps,
+            Operation.GET_VRF_DETAIL: self._get_vrf_detail,
         }
 
     def _get_rsvp_lsps(self) -> RsvpLspInventory:
@@ -88,3 +90,7 @@ class IosxrAdapter(DeviceAdapter):
             "show rsvp session detail", output_format=OutputFormat.TEXT
         )
         return parse_rsvp_session_detail(output)
+
+    def _get_vrf_detail(self) -> VrfInventory:
+        output = self._send_command("show vrf all detail", output_format=OutputFormat.TEXT)
+        return parse_vrf_all_detail(output)
