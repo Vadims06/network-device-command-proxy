@@ -161,8 +161,9 @@ class RsvpExplicitRouteHop(BaseModel):
 
 
 class RsvpRecordRouteFlags(BaseModel):
-    """Decoded record-route address flags (RFC 3209 + a Cisco node-id bit).
-    Bit mapping is open, see docs/rsvp-lsp-schema-freeze.md."""
+    """Record-route address flags: low bits per RFC 3209. Vendor-specific
+    higher bits (e.g. the IOS XR 0x20 node-id) are not decoded, only kept in
+    the sibling flags_raw. See docs/rsvp-parsing.md."""
 
     model_config = ConfigDict(extra="forbid")
 

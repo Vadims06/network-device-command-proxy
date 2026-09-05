@@ -265,7 +265,7 @@ models are the contract" above.
 See `platforms/iosxr/` for a complete example: the first text-format platform
 (`OutputFormat.TEXT`, both existing platforms before it consume structured
 JSON), including a from-scratch line parser cross-checked against an
-independent oracle (`docs/rsvp-lsp-schema-freeze.md`,
+independent oracle (`docs/rsvp-parsing.md`,
 `tests/test_rsvp_parser_genie_oracle.py`).
 
 ### live smoke test

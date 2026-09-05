@@ -1,7 +1,7 @@
 """IOS XR semantic operation adapter and Scrapli driver creation.
 
 First text-parsing platform in the proxy (both frr and junos consume
-structured JSON); see docs/rsvp-lsp-schema-freeze.md.
+structured JSON); see docs/rsvp-parsing.md.
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def create_adapter(device: DeviceProfile, credentials: DeviceCredentials) -> "Io
 
 # No field in RsvpLspInventory is structurally unreportable via this command;
 # every field is either populated or a legitimate "No intf"/"No label"/empty
-# value the device itself reports (see docs/rsvp-lsp-schema-freeze.md).
+# value the device itself reports (see docs/rsvp-parsing.md).
 UNSUPPORTED_FIELDS: dict[Operation, tuple[str, ...]] = {}
 
 

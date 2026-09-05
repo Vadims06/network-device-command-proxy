@@ -6,7 +6,7 @@ it, copied from `CiscoTestAutomation/genieparser` (Apache License 2.0):
 
 Only the captured device output and Genie's expected-result dicts are copied
 here, never Genie's parser code. Genie stays a test oracle, not a runtime
-dependency (see `docs/rsvp-lsp-schema-freeze.md`).
+dependency (see `docs/rsvp-parsing.md`).
 
 | File | Upstream source | What it gives |
 |---|---|---|

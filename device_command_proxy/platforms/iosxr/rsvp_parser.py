@@ -1,7 +1,7 @@
 """Parse `show rsvp session detail` (IOS XR) into the neutral RSVP schema.
 
 Field mapping and the record-route pairing/flag rules are recorded in
-docs/rsvp-lsp-schema-freeze.md; this module implements them. No Genie code is
+docs/rsvp-parsing.md; this module implements them. No Genie code is
 used here - the copied fixtures under tests/fixtures/cisco_iosxr/ are an
 independent oracle, exercised by tests/test_rsvp_parser_genie_oracle.py.
 """

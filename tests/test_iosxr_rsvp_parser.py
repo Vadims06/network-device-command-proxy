@@ -122,7 +122,7 @@ def test_egress_session_has_no_reservation():
 
 def test_no_role_field_in_parsed_output():
     """Role is derived by the caller, not the proxy - see schemas.RsvpSession
-    docstring and docs/rsvp-lsp-schema-freeze.md."""
+    docstring and docs/rsvp-parsing.md."""
     result = parse_rsvp_session_detail(
         _read_fixture("show_rsvp_session_detail_egress_multi.txt")
     )

@@ -45,7 +45,7 @@ specifically needs to know.
   the line-parser style (`re.match` per line, a small state machine) and how
   a parser is cross-checked against an independent oracle
   (`tests/test_rsvp_parser_genie_oracle.py`,
-  `docs/rsvp-lsp-schema-freeze.md`).
+  `docs/rsvp-parsing.md`).
 - Every new response model field needs a one-line reason: which vendor
   command reports it, in what shape. A field with no vendor behind it yet is
   speculative and does not belong in the model.
