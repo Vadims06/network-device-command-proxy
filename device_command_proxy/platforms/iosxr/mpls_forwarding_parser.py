@@ -10,7 +10,6 @@ import re
 _ENTRY_RE = re.compile(
     r'^(\S+)\s+(\S+)\s+(.+?)\s+(\S+)\s+(\S+)\s+(\d+)\s*$'
 )
-_HEADER_WORDS = frozenset({"Local", "Label", "------"})
 
 
 def parse_mpls_forwarding(output: str) -> dict:
@@ -20,8 +19,9 @@ def parse_mpls_forwarding(output: str) -> dict:
     entries: list[dict] = []
 
     for line in output.splitlines():
-        if not line.strip() or line.split()[0] in _HEADER_WORDS:
-            continue
+        # The two header rows, the dashes rule, the command echo and the
+        # timestamp line all lack a trailing byte count, so the entry
+        # pattern already excludes them without a separate word-list guard.
         if match := _ENTRY_RE.match(line):
             local_label, outgoing_label, prefix_or_id, interface, next_hop, byte_count = (
                 match.groups()

@@ -313,6 +313,9 @@ class IsisNeighbors(BaseModel):
 
 
 class IsisInterfaceState(BaseModel):
+    """Adjacency count is per level, not one collapsed field: an L1L2
+    interface can hold a different adjacency count on each level."""
+
     model_config = ConfigDict(extra="forbid")
 
     interface: str
