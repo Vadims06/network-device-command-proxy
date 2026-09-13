@@ -8,7 +8,8 @@ from typing import Any, Iterator
 
 from scrapli.driver.core import JunosDriver
 
-from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
+from device_command_proxy.contracts import DeviceCredentials, DeviceProfile, Transport
+from device_command_proxy.fixture_driver import create_fixture_driver
 from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms import neutral
 from device_command_proxy.platforms.base import DeviceAdapter
@@ -83,6 +84,8 @@ def create_junos_driver(
 
 
 def create_adapter(device: DeviceProfile, credentials: DeviceCredentials) -> "JunosAdapter":
+    if device.transport is Transport.FIXTURE:
+        return JunosAdapter(lambda: create_fixture_driver(device.name))
     return JunosAdapter(lambda: create_junos_driver(device, credentials))
 
 

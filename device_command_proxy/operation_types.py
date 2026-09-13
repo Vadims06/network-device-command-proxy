@@ -29,3 +29,11 @@ class AuthenticationType(StrEnum):
 class ResultStatus(StrEnum):
     SUCCESS = "success"
     ERROR = "error"
+
+
+class DataSource(StrEnum):
+    """Tells a caller whether a result came from a real device or a captured fixture."""
+
+    LIVE = "live"
+    FIXTURE = "fixture"
+    UNKNOWN = "unknown"

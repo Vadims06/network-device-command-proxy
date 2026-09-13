@@ -32,6 +32,9 @@ genie = [
 [tool.setuptools.packages.find]
 include = ["device_command_proxy*"]
 
+[tool.setuptools.package-data]
+device_command_proxy = ["fixtures/**/*"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

@@ -8,7 +8,8 @@ from typing import Any, Iterator
 
 from scrapli.driver.generic import GenericDriver
 
-from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
+from device_command_proxy.contracts import DeviceCredentials, DeviceProfile, Transport
+from device_command_proxy.fixture_driver import create_fixture_driver
 from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms import neutral
 from device_command_proxy.platforms.base import DeviceAdapter
@@ -75,6 +76,8 @@ def create_frr_driver(
 
 
 def create_adapter(device: DeviceProfile, credentials: DeviceCredentials) -> "FrrAdapter":
+    if device.transport is Transport.FIXTURE:
+        return FrrAdapter(lambda: create_fixture_driver(device.name))
     return FrrAdapter(lambda: create_frr_driver(device, credentials))
 
 

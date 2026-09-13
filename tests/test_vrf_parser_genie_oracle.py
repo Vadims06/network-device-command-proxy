@@ -7,9 +7,12 @@ import pytest
 
 genie_show_vrf = pytest.importorskip("genie.libs.parser.iosxr.show_vrf")
 
+import device_command_proxy
 from device_command_proxy.platforms.iosxr.vrf_parser import parse_vrf_all_detail
 
-_FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "fixtures", "cisco_iosxr")
+_FIXTURE_DIR = os.path.join(
+    os.path.dirname(device_command_proxy.__file__), "fixtures", "captured", "cisco_iosxr"
+)
 
 
 def _read_fixture(name):

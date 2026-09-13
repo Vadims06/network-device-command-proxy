@@ -34,6 +34,7 @@ def test_success_result_matches_normalized_contract():
         },
         "duration_ms": 184,
         "unsupported_fields": [],
+        "data_source": "unknown",
     }
 
 
@@ -59,6 +60,7 @@ def test_error_result_is_structured_and_has_no_raw_output():
         "data": None,
         "duration_ms": 5000,
         "unsupported_fields": [],
+        "data_source": "unknown",
         "error": {
             "code": "device_unreachable",
             "message": "device unreachable",

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Mapping, Protocol
 
-from device_command_proxy.operation_types import AuthenticationType, ResultStatus
+from device_command_proxy.operation_types import AuthenticationType, DataSource, ResultStatus
 
 
 class ErrorCode(StrEnum):
@@ -24,6 +24,14 @@ class ErrorCode(StrEnum):
     DEADLINE_EXCEEDED = "deadline_exceeded"
     QUEUE_FULL = "queue_full"
     INTERNAL_ERROR = "internal_error"
+    FIXTURE_NOT_FOUND = "fixture_not_found"
+
+
+class Transport(StrEnum):
+    """How a device's adapter reaches it - chosen once, in inventory config."""
+
+    SSH = "ssh"
+    FIXTURE = "fixture"
 
 
 @dataclass(frozen=True)
@@ -34,6 +42,7 @@ class DeviceProfile:
     platform: str
     credential_profile: str
     interfaces: frozenset[str] = field(default_factory=frozenset)
+    transport: Transport = Transport.SSH
 
 
 @dataclass(frozen=True, repr=False)
@@ -93,6 +102,7 @@ class DeviceResult:
     duration_ms: int
     error: OperationError | None = None
     unsupported_fields: tuple[str, ...] = ()
+    data_source: DataSource = DataSource.UNKNOWN
 
     def as_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = {
@@ -103,6 +113,7 @@ class DeviceResult:
             "data": self.data,
             "duration_ms": self.duration_ms,
             "unsupported_fields": list(self.unsupported_fields),
+            "data_source": self.data_source,
         }
         if self.error is None:
             return result

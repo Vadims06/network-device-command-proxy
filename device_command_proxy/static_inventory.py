@@ -11,13 +11,13 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError
+from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError, Transport
 from device_command_proxy.json_files import reject_duplicate_keys
 from device_command_proxy.validation import validate_devices
 
 
 _KNOWN_ENTRY_FIELDS = frozenset(
-    {"host", "port", "platform", "credential_profile", "interfaces"}
+    {"host", "port", "platform", "credential_profile", "interfaces", "transport"}
 )
 
 
@@ -96,6 +96,13 @@ def _parse_device(
             port=_valid_port(entry.get("port", 22)),
             platform=_valid_name(entry["platform"], "platform", supported_platforms),
             credential_profile=_credential_profile(entry, credential_profiles),
+            transport=Transport(
+                _valid_name(
+                    entry.get("transport", Transport.SSH.value),
+                    "transport",
+                    frozenset(member.value for member in Transport),
+                )
+            ),
         )
     except KeyError as exception:
         raise ValueError(

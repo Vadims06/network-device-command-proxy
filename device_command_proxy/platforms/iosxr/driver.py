@@ -11,7 +11,8 @@ from typing import Iterator
 
 from scrapli.driver.generic import GenericDriver
 
-from device_command_proxy.contracts import DeviceCredentials, DeviceProfile
+from device_command_proxy.contracts import DeviceCredentials, DeviceProfile, Transport
+from device_command_proxy.fixture_driver import create_fixture_driver
 from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms.base import DeviceAdapter, OutputFormat
 from device_command_proxy.platforms.iosxr.rsvp_parser import parse_rsvp_session_detail
@@ -68,6 +69,8 @@ def create_iosxr_driver(
 
 
 def create_adapter(device: DeviceProfile, credentials: DeviceCredentials) -> "IosxrAdapter":
+    if device.transport is Transport.FIXTURE:
+        return IosxrAdapter(lambda: create_fixture_driver(device.name))
     return IosxrAdapter(lambda: create_iosxr_driver(device, credentials))
 
 

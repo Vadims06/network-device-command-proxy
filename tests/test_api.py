@@ -57,6 +57,7 @@ def test_execute_requires_static_bearer_token_and_returns_stable_contract():
                 "data": {"instance": None, "neighbors": []},
                 "duration_ms": 4,
                 "unsupported_fields": [],
+                "data_source": "unknown",
             }
         ],
     }

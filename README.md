@@ -119,8 +119,20 @@ Static inventory fields:
 | `port` | no | SSH port, default `22` |
 | `platform` | yes | `frr` or `junos` |
 | `credential_profile` | Vault only | Logical Vault profile name |
+| `transport` | no | `ssh` (default) or `fixture` - see below |
 Without static inventory, NetBox must provide `primary_ip4`, `ssh_port`,
 `platform.slug`, `credential_profile`, and the device interfaces.
+
+### Fixture-backed demo devices
+
+A device with `"transport": "fixture"` never opens SSH. Its adapter replays
+captured CLI text from `device_command_proxy/fixtures/demo/<device>.json` (a
+map of exact command to a path under `fixtures/captured/`) through the same
+vendor parser a live device's output goes through, so the answer proves the
+parser instead of skipping it. Needs no real device credentials - any
+`CredentialProvider` is still consulted but its result is never used - and no
+network reachability to the device. Add a captured `.txt` file plus a map
+entry to demo an operation with no fixture yet; nothing else changes.
 
 ### Credentials: choose one
 
@@ -304,6 +316,7 @@ returned as supplied by the device and are not case-normalized.
 | `queue_full` | Service is at capacity |
 | `output_too_large` | Device output exceeded 1 MB |
 | `inventory_unavailable` | NetBox did not respond |
+| `fixture_not_found` | A `transport: fixture` device has no captured answer for this command |
 | `internal_error` | An error outside the above categories; details are in logs |
 
 Callers should branch on `error.code`, not on the human-readable message.

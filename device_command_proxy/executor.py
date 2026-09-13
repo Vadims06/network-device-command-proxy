@@ -17,7 +17,9 @@ from device_command_proxy.contracts import (
     InventoryProvider,
     OperationError,
     OperationRequest,
+    Transport,
 )
+from device_command_proxy.operation_types import DataSource
 from device_command_proxy.validation import (
     validate_arguments,
     validate_devices,
@@ -67,6 +69,7 @@ class BatchExecutor:
         # still running at the deadline is still reported against its real
         # platform instead of "unknown".
         resolved_platforms: dict[str, str] = {}
+        resolved_data_sources: dict[str, DataSource] = {}
         validated_arguments_by_device: dict[str, Mapping[str, Any]] = {}
         for device_name in request.devices:
             if not self._capacity.acquire(blocking=False):
@@ -84,6 +87,7 @@ class BatchExecutor:
                 request.operation,
                 request.arguments,
                 resolved_platforms,
+                resolved_data_sources,
                 validated_arguments_by_device,
             )
             future.add_done_callback(lambda _future: self._capacity.release())
@@ -99,6 +103,7 @@ class BatchExecutor:
             future.cancel()
             device_name = futures[future]
             platform = resolved_platforms.get(device_name, "unknown")
+            data_source = resolved_data_sources.get(device_name, DataSource.UNKNOWN)
             results[device_name] = self._error_result(
                 device_name,
                 request.operation,
@@ -108,6 +113,7 @@ class BatchExecutor:
                 unsupported_fields=self._platform_unsupported_fields(
                     platform, request.operation
                 ),
+                data_source=data_source,
             )
         for device_name in request.devices:
             audit.record(
@@ -126,14 +132,22 @@ class BatchExecutor:
         operation: str,
         arguments: Mapping[str, Any],
         resolved_platforms: dict[str, str],
+        resolved_data_sources: dict[str, DataSource],
         validated_arguments_by_device: dict[str, Mapping[str, Any]],
     ) -> DeviceResult:
         started_at = perf_counter()
         platform = "unknown"
+        data_source = DataSource.UNKNOWN
         try:
             device = self._inventory.get_device(device_name)
             platform = device.platform
+            data_source = (
+                DataSource.FIXTURE
+                if device.transport is Transport.FIXTURE
+                else DataSource.LIVE
+            )
             resolved_platforms[device_name] = platform
+            resolved_data_sources[device_name] = data_source
             device_arguments = validate_arguments(operation, arguments, device)
             validated_arguments_by_device[device_name] = device_arguments
             adapter_factory = self._adapter_factories.get(platform)
@@ -160,6 +174,7 @@ class BatchExecutor:
                 unsupported_fields=self._platform_unsupported_fields(
                     platform, operation
                 ),
+                data_source=data_source,
             )
         except ExecutionError as exception:
             return self._error_result(
@@ -172,6 +187,7 @@ class BatchExecutor:
                 unsupported_fields=self._platform_unsupported_fields(
                     platform, operation
                 ),
+                data_source=data_source,
             )
         except Exception:
             # internal_error carries no detail to the caller on purpose, so
@@ -191,6 +207,7 @@ class BatchExecutor:
                 unsupported_fields=self._platform_unsupported_fields(
                     platform, operation
                 ),
+                data_source=data_source,
             )
 
     def _platform_unsupported_fields(
@@ -212,6 +229,7 @@ class BatchExecutor:
         *,
         started_at: float | None = None,
         unsupported_fields: tuple[str, ...] = (),
+        data_source: DataSource = DataSource.UNKNOWN,
     ) -> DeviceResult:
         duration_ms = 0
         if started_at is not None:
@@ -225,4 +243,5 @@ class BatchExecutor:
             duration_ms=duration_ms,
             error=OperationError(code=code, message=message),
             unsupported_fields=unsupported_fields,
+            data_source=data_source,
         )

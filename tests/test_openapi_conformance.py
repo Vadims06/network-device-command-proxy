@@ -145,6 +145,7 @@ def _envelope(*, status, operation, data=None, error=None):
         "data": data,
         "duration_ms": 10,
         "unsupported_fields": [],
+        "data_source": "live",
     }
     if error is not None:
         result["error"] = error

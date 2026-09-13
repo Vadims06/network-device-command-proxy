@@ -7,7 +7,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from device_command_proxy.operation_types import Operation
+from device_command_proxy.operation_types import DataSource, Operation
 from device_command_proxy.operation_types import ResultStatus
 from device_command_proxy.contracts import ErrorCode
 
@@ -273,6 +273,7 @@ class _DeviceResultBase(BaseModel):
     platform: str
     duration_ms: int
     unsupported_fields: list[str]
+    data_source: DataSource
 
 
 class DeviceErrorResultModel(_DeviceResultBase):

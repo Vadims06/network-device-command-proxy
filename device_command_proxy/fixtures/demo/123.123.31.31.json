@@ -1,0 +1,4 @@
+{
+  "show rsvp session detail": "captured/cisco_iosxr/show_rsvp_session_detail_headend.txt",
+  "show vrf all detail": "captured/cisco_iosxr/show_vrf_all_detail.txt"
+}

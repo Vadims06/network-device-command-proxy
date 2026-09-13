@@ -9,5 +9,10 @@
     "host": "192.0.2.12",
     "platform": "junos",
     "credential_profile": "prod-junos-readonly"
+  },
+  "123.123.31.31": {
+    "host": "123.123.31.31",
+    "platform": "iosxr",
+    "transport": "fixture"
   }
 }

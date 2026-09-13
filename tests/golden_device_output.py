@@ -5,7 +5,11 @@ real vendor output shapes rather than against hand-built neutral dicts.
 """
 import os
 
-_FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "fixtures", "cisco_iosxr")
+import device_command_proxy
+
+_FIXTURE_DIR = os.path.join(
+    os.path.dirname(device_command_proxy.__file__), "fixtures", "captured", "cisco_iosxr"
+)
 
 
 def _read_fixture(name):

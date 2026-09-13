@@ -2,7 +2,7 @@
 
 Field mapping and the record-route pairing/flag rules are recorded in
 docs/rsvp-parsing.md; this module implements them. No Genie code is
-used here - the copied fixtures under tests/fixtures/cisco_iosxr/ are an
+used here - the copied fixtures under fixtures/captured/cisco_iosxr/ are an
 independent oracle, exercised by tests/test_rsvp_parser_genie_oracle.py.
 """
 from __future__ import annotations
