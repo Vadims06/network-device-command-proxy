@@ -33,3 +33,14 @@ def test_single_peer_full_fields():
             "messages_received": 232,
         }
     ]
+
+
+def test_second_peer_block_closes_the_first():
+    """The fixture has one peer; two copies of it back to back proves a new
+    'Peer LDP Identifier' line flushes the block in progress rather than
+    merging into it."""
+    single = _read_fixture("show_mpls_ldp_neighbor_detail.txt")
+    result = parse_mpls_ldp_neighbor_detail(single + single)
+
+    assert len(result["neighbors"]) == 2
+    assert result["neighbors"][0] == result["neighbors"][1]

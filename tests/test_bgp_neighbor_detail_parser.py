@@ -37,3 +37,14 @@ def test_single_neighbor_full_fields():
             "messages_sent": 40667,
         }
     ]
+
+
+def test_second_neighbor_block_closes_the_first():
+    """The fixture has one neighbor; two copies of it back to back proves a
+    new 'BGP neighbor is' line flushes the block in progress rather than
+    merging into it."""
+    single = _read_fixture("show_bgp_instance_neighbors_detail.txt")
+    result = parse_bgp_neighbor_detail(single + single)
+
+    assert len(result["neighbors"]) == 2
+    assert result["neighbors"][0] == result["neighbors"][1]
