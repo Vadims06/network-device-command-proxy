@@ -1,0 +1,5 @@
+{
+  "show isis neighbors": "captured/cisco_iosxr/show_isis_neighbors.txt",
+  "show isis interface": "captured/cisco_iosxr/show_isis_interface.txt",
+  "show isis database detail": "captured/cisco_iosxr/show_isis_database_detail.txt"
+}

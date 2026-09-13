@@ -247,6 +247,149 @@ class VrfInventory(BaseModel):
     vrfs: list[VrfDetail]
 
 
+class BgpNeighborSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    neighbor: str
+    remote_as: int
+    messages_received: int
+    messages_sent: int
+    up_down: str
+    state_or_prefixes_received: str
+
+
+class BgpAddressFamilySummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    address_family: str
+    router_id: str | None
+    local_as: int | None
+    neighbors: list[BgpNeighborSummary]
+
+
+class BgpSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    address_families: list[BgpAddressFamilySummary]
+
+
+class BgpNeighborDetail(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    neighbor: str
+    remote_as: int | None
+    local_as: int | None
+    remote_router_id: str | None
+    state: str | None
+    up_time: str | None
+    hold_time_sec: int | None
+    keepalive_interval_sec: int | None
+    messages_received: int | None
+    messages_sent: int | None
+
+
+class BgpNeighborDetails(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    neighbors: list[BgpNeighborDetail]
+
+
+class IsisNeighbor(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    system_id: str
+    interface: str
+    snpa: str
+    state: str
+    holdtime_sec: int
+    circuit_type: str
+
+
+class IsisNeighbors(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    instance: str | None
+    neighbors: list[IsisNeighbor]
+
+
+class IsisInterfaceState(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    interface: str
+    state: str
+    circuit_type: str | None
+    media_type: str | None
+    adjacency_count_l1: int | None
+    adjacency_count_l2: int | None
+    metric_l1: int | None
+    metric_l2: int | None
+
+
+class IsisInterfaces(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    interfaces: list[IsisInterfaceState]
+
+
+class IsisLsp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    lsp_id: str
+    own_lsp: bool
+    sequence_number: str
+    checksum: str
+    holdtime_sec: int | None
+    att_p_ol: str
+
+
+class IsisLevelDatabase(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    level: str
+    lsps: list[IsisLsp]
+
+
+class IsisDatabase(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    instance: str | None
+    levels: list[IsisLevelDatabase]
+
+
+class MplsForwardingEntry(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    local_label: str
+    outgoing_label: str
+    prefix_or_id: str
+    outgoing_interface: str
+    next_hop: str
+    bytes_switched: int
+
+
+class MplsForwardingTable(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    entries: list[MplsForwardingEntry]
+
+
+class MplsLdpNeighbor(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    peer_ldp_identifier: str
+    state: str | None
+    up_time: str | None
+    session_holdtime_sec: int | None
+    messages_sent: int | None
+    messages_received: int | None
+
+
+class MplsLdpNeighbors(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    neighbors: list[MplsLdpNeighbor]
+
+
 class OperationErrorModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -346,6 +489,55 @@ class SuccessVrfDetailResultModel(_DeviceResultBase):
     error: None = None
 
 
+class SuccessBgpSummaryResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_BGP_SUMMARY]
+    status: Literal[ResultStatus.SUCCESS]
+    data: BgpSummary
+    error: None = None
+
+
+class SuccessBgpNeighborDetailResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_BGP_NEIGHBOR_DETAIL]
+    status: Literal[ResultStatus.SUCCESS]
+    data: BgpNeighborDetails
+    error: None = None
+
+
+class SuccessIsisNeighborsResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_ISIS_NEIGHBORS]
+    status: Literal[ResultStatus.SUCCESS]
+    data: IsisNeighbors
+    error: None = None
+
+
+class SuccessIsisInterfaceResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_ISIS_INTERFACE]
+    status: Literal[ResultStatus.SUCCESS]
+    data: IsisInterfaces
+    error: None = None
+
+
+class SuccessIsisDatabaseResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_ISIS_DATABASE]
+    status: Literal[ResultStatus.SUCCESS]
+    data: IsisDatabase
+    error: None = None
+
+
+class SuccessMplsForwardingResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_MPLS_FORWARDING]
+    status: Literal[ResultStatus.SUCCESS]
+    data: MplsForwardingTable
+    error: None = None
+
+
+class SuccessLdpNeighborsResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_LDP_NEIGHBORS]
+    status: Literal[ResultStatus.SUCCESS]
+    data: MplsLdpNeighbors
+    error: None = None
+
+
 DeviceSuccessResultModel = RootModel[
     Annotated[
         Union[
@@ -358,6 +550,13 @@ DeviceSuccessResultModel = RootModel[
             SuccessRouteResultModel,
             SuccessRsvpLspsResultModel,
             SuccessVrfDetailResultModel,
+            SuccessBgpSummaryResultModel,
+            SuccessBgpNeighborDetailResultModel,
+            SuccessIsisNeighborsResultModel,
+            SuccessIsisInterfaceResultModel,
+            SuccessIsisDatabaseResultModel,
+            SuccessMplsForwardingResultModel,
+            SuccessLdpNeighborsResultModel,
         ],
         Field(discriminator="operation"),
     ]

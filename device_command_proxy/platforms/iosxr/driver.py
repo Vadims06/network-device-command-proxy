@@ -15,9 +15,32 @@ from device_command_proxy.contracts import DeviceCredentials, DeviceProfile, Tra
 from device_command_proxy.fixture_driver import create_fixture_driver
 from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms.base import DeviceAdapter, OutputFormat
+from device_command_proxy.platforms.iosxr.bgp_neighbor_detail_parser import (
+    parse_bgp_neighbor_detail,
+)
+from device_command_proxy.platforms.iosxr.bgp_summary_parser import parse_bgp_instance_summary
+from device_command_proxy.platforms.iosxr.isis_database_parser import (
+    parse_isis_database_detail,
+)
+from device_command_proxy.platforms.iosxr.isis_interface_parser import parse_isis_interface
+from device_command_proxy.platforms.iosxr.isis_neighbors_parser import parse_isis_neighbors
+from device_command_proxy.platforms.iosxr.mpls_forwarding_parser import parse_mpls_forwarding
+from device_command_proxy.platforms.iosxr.mpls_ldp_neighbor_parser import (
+    parse_mpls_ldp_neighbor_detail,
+)
 from device_command_proxy.platforms.iosxr.rsvp_parser import parse_rsvp_session_detail
 from device_command_proxy.platforms.iosxr.vrf_parser import parse_vrf_all_detail
-from device_command_proxy.schemas import RsvpLspInventory, VrfInventory
+from device_command_proxy.schemas import (
+    BgpNeighborDetails,
+    BgpSummary,
+    IsisDatabase,
+    IsisInterfaces,
+    IsisNeighbors,
+    MplsForwardingTable,
+    MplsLdpNeighbors,
+    RsvpLspInventory,
+    VrfInventory,
+)
 from device_command_proxy.ssh_auth import (
     authentication_options,
     ensure_host_key,
@@ -86,6 +109,13 @@ class IosxrAdapter(DeviceAdapter):
         self._operation_handlers = {
             Operation.GET_RSVP_LSPS: self._get_rsvp_lsps,
             Operation.GET_VRF_DETAIL: self._get_vrf_detail,
+            Operation.GET_BGP_SUMMARY: self._get_bgp_summary,
+            Operation.GET_BGP_NEIGHBOR_DETAIL: self._get_bgp_neighbor_detail,
+            Operation.GET_ISIS_NEIGHBORS: self._get_isis_neighbors,
+            Operation.GET_ISIS_INTERFACE: self._get_isis_interface,
+            Operation.GET_ISIS_DATABASE: self._get_isis_database,
+            Operation.GET_MPLS_FORWARDING: self._get_mpls_forwarding,
+            Operation.GET_LDP_NEIGHBORS: self._get_ldp_neighbors,
         }
 
     def _get_rsvp_lsps(self) -> RsvpLspInventory:
@@ -97,3 +127,40 @@ class IosxrAdapter(DeviceAdapter):
     def _get_vrf_detail(self) -> VrfInventory:
         output = self._send_command("show vrf all detail", output_format=OutputFormat.TEXT)
         return parse_vrf_all_detail(output)
+
+    def _get_bgp_summary(self) -> BgpSummary:
+        output = self._send_command(
+            "show bgp instance all all all summary", output_format=OutputFormat.TEXT
+        )
+        return parse_bgp_instance_summary(output)
+
+    def _get_bgp_neighbor_detail(self) -> BgpNeighborDetails:
+        output = self._send_command(
+            "show bgp instance all all all neighbors detail",
+            output_format=OutputFormat.TEXT,
+        )
+        return parse_bgp_neighbor_detail(output)
+
+    def _get_isis_neighbors(self) -> IsisNeighbors:
+        output = self._send_command("show isis neighbors", output_format=OutputFormat.TEXT)
+        return parse_isis_neighbors(output)
+
+    def _get_isis_interface(self) -> IsisInterfaces:
+        output = self._send_command("show isis interface", output_format=OutputFormat.TEXT)
+        return parse_isis_interface(output)
+
+    def _get_isis_database(self) -> IsisDatabase:
+        output = self._send_command(
+            "show isis database detail", output_format=OutputFormat.TEXT
+        )
+        return parse_isis_database_detail(output)
+
+    def _get_mpls_forwarding(self) -> MplsForwardingTable:
+        output = self._send_command("show mpls forwarding", output_format=OutputFormat.TEXT)
+        return parse_mpls_forwarding(output)
+
+    def _get_ldp_neighbors(self) -> MplsLdpNeighbors:
+        output = self._send_command(
+            "show mpls ldp neighbor detail", output_format=OutputFormat.TEXT
+        )
+        return parse_mpls_ldp_neighbor_detail(output)

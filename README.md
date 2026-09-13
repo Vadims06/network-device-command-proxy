@@ -134,6 +134,13 @@ parser instead of skipping it. Needs no real device credentials - any
 network reachability to the device. Add a captured `.txt` file plus a map
 entry to demo an operation with no fixture yet; nothing else changes.
 
+Current demo devices: `123.123.31.31` and `123.123.100.100` reuse router IDs
+that already exist in the OSPF/BGP topology, so a live
+device-command answer about them lines up with what that demo graph already
+shows. `123.123.200.200` (IS-IS) has no such counterpart - the demo
+graph is OSPF, not IS-IS - so it is a placeholder identity that demos the
+IS-IS operations without pretending to match a stored graph.
+
 ### Credentials: choose one
 
 #### Environment credentials
@@ -233,6 +240,13 @@ not need a token.
 | `get_route` | `prefix` | Matching routes and next hops |
 | `get_rsvp_lsps` | none | RSVP-TE sessions (`show rsvp session detail`, IOS XR) |
 | `get_vrf_detail` | none | VRF inventory (`show vrf all detail`, IOS XR) |
+| `get_bgp_summary` | none | BGP session summary per address family (`show bgp instance all all all summary`, IOS XR) |
+| `get_bgp_neighbor_detail` | none | Detailed BGP neighbor state (`show bgp instance all all all neighbors detail`, IOS XR) |
+| `get_isis_neighbors` | none | IS-IS adjacencies (`show isis neighbors`, IOS XR) |
+| `get_isis_interface` | none | IS-IS per-interface state and per-level metric/adjacency count (`show isis interface`, IOS XR) |
+| `get_isis_database` | none | IS-IS LSDB summary, per level (`show isis database detail`, IOS XR) |
+| `get_mpls_forwarding` | none | MPLS label forwarding table (`show mpls forwarding`, IOS XR) |
+| `get_ldp_neighbors` | none | LDP session state (`show mpls ldp neighbor detail`, IOS XR) |
 
 ### The response models are the contract
 

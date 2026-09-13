@@ -245,6 +245,13 @@ JUNOS_OUTPUT["get_ospf_interfaces"] = JUNOS_OUTPUT["get_ospf_interface"]
 IOSXR_OUTPUT = {
     "get_rsvp_lsps": _read_fixture("show_rsvp_session_detail_headend.txt"),
     "get_vrf_detail": _read_fixture("show_vrf_all_detail.txt"),
+    "get_bgp_summary": _read_fixture("show_bgp_instance_summary.txt"),
+    "get_bgp_neighbor_detail": _read_fixture("show_bgp_instance_neighbors_detail.txt"),
+    "get_isis_neighbors": _read_fixture("show_isis_neighbors.txt"),
+    "get_isis_interface": _read_fixture("show_isis_interface.txt"),
+    "get_isis_database": _read_fixture("show_isis_database_detail.txt"),
+    "get_mpls_forwarding": _read_fixture("show_mpls_forwarding.txt"),
+    "get_ldp_neighbors": _read_fixture("show_mpls_ldp_neighbor_detail.txt"),
 }
 
 

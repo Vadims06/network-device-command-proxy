@@ -6,7 +6,14 @@ from dataclasses import dataclass
 from pydantic import BaseModel
 
 from device_command_proxy.schemas import (
+    BgpNeighborDetails,
+    BgpSummary,
     InterfaceStatus,
+    IsisDatabase,
+    IsisInterfaces,
+    IsisNeighbors,
+    MplsForwardingTable,
+    MplsLdpNeighbors,
     OspfInterfaces,
     OspfNeighborDetails,
     OspfNeighbors,
@@ -52,6 +59,27 @@ OPERATION_SPECS = {
     ),
     Operation.GET_VRF_DETAIL: OperationSpec(
         Operation.GET_VRF_DETAIL, ArgumentKind.NONE, VrfInventory
+    ),
+    Operation.GET_BGP_SUMMARY: OperationSpec(
+        Operation.GET_BGP_SUMMARY, ArgumentKind.NONE, BgpSummary
+    ),
+    Operation.GET_BGP_NEIGHBOR_DETAIL: OperationSpec(
+        Operation.GET_BGP_NEIGHBOR_DETAIL, ArgumentKind.NONE, BgpNeighborDetails
+    ),
+    Operation.GET_ISIS_NEIGHBORS: OperationSpec(
+        Operation.GET_ISIS_NEIGHBORS, ArgumentKind.NONE, IsisNeighbors
+    ),
+    Operation.GET_ISIS_INTERFACE: OperationSpec(
+        Operation.GET_ISIS_INTERFACE, ArgumentKind.NONE, IsisInterfaces
+    ),
+    Operation.GET_ISIS_DATABASE: OperationSpec(
+        Operation.GET_ISIS_DATABASE, ArgumentKind.NONE, IsisDatabase
+    ),
+    Operation.GET_MPLS_FORWARDING: OperationSpec(
+        Operation.GET_MPLS_FORWARDING, ArgumentKind.NONE, MplsForwardingTable
+    ),
+    Operation.GET_LDP_NEIGHBORS: OperationSpec(
+        Operation.GET_LDP_NEIGHBORS, ArgumentKind.NONE, MplsLdpNeighbors
     ),
 }
 

@@ -1,4 +1,6 @@
 {
   "show rsvp session detail": "captured/cisco_iosxr/show_rsvp_session_detail_headend.txt",
-  "show vrf all detail": "captured/cisco_iosxr/show_vrf_all_detail.txt"
+  "show vrf all detail": "captured/cisco_iosxr/show_vrf_all_detail.txt",
+  "show mpls forwarding": "captured/cisco_iosxr/show_mpls_forwarding.txt",
+  "show mpls ldp neighbor detail": "captured/cisco_iosxr/show_mpls_ldp_neighbor_detail.txt"
 }

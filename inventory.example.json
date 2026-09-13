@@ -14,5 +14,15 @@
     "host": "123.123.31.31",
     "platform": "iosxr",
     "transport": "fixture"
+  },
+  "123.123.100.100": {
+    "host": "123.123.100.100",
+    "platform": "iosxr",
+    "transport": "fixture"
+  },
+  "123.123.200.200": {
+    "host": "123.123.200.200",
+    "platform": "iosxr",
+    "transport": "fixture"
   }
 }

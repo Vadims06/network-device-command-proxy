@@ -13,6 +13,13 @@ class Operation(StrEnum):
     GET_ROUTE = "get_route"
     GET_RSVP_LSPS = "get_rsvp_lsps"
     GET_VRF_DETAIL = "get_vrf_detail"
+    GET_BGP_SUMMARY = "get_bgp_summary"
+    GET_BGP_NEIGHBOR_DETAIL = "get_bgp_neighbor_detail"
+    GET_ISIS_NEIGHBORS = "get_isis_neighbors"
+    GET_ISIS_INTERFACE = "get_isis_interface"
+    GET_ISIS_DATABASE = "get_isis_database"
+    GET_MPLS_FORWARDING = "get_mpls_forwarding"
+    GET_LDP_NEIGHBORS = "get_ldp_neighbors"
 
 
 class ArgumentKind(StrEnum):
