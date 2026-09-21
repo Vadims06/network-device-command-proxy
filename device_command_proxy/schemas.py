@@ -197,8 +197,7 @@ class RsvpReservation(BaseModel):
 class RsvpSession(BaseModel):
     """One RSVP-TE session as this device sees it. No role field: role
     (ingress/transit/egress) needs the queried device's own router-id, which
-    is knowledge the proxy does not have - the caller
-    derives it."""
+    the proxy does not know; the caller derives it."""
 
     model_config = ConfigDict(extra="forbid")
 

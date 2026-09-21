@@ -5,9 +5,8 @@ How a text `show`-style RSVP-TE session command maps onto the neutral
 first parser, kept as the reference every later platform is held to.
 
 First platform: IOS XR (`show rsvp session detail`). Fixtures and the
-independent oracle used to pin the mapping down: `tests/fixtures/cisco_iosxr/`
-(captured device output plus the `genieparser` expected dicts, Apache-2.0 -
-see `PROVENANCE.md`; Genie is a test oracle, never a runtime dependency).
+independent oracle used to pin the mapping down: `device_command_proxy/fixtures/captured/cisco_iosxr/`
+(captured device output from `genieparser`, Apache-2.0 - see `PROVENANCE.md`; Genie is a test oracle, never a runtime dependency).
 
 ## Field-by-field
 
