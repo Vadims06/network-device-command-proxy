@@ -1,0 +1,43 @@
+{
+  "ospfInstance": 1,
+  "interfaces": {
+    "eth1": {
+      "ifUp": true,
+      "ifIndex": 144738,
+      "mtuBytes": 9500,
+      "bandwidthMbit": 10000,
+      "ifFlags": "<UP,LOWER_UP,BROADCAST,RUNNING,MULTICAST>",
+      "ospfEnabled": true,
+      "ipAddress": "10.1.30.2",
+      "ipAddressPrefixlen": 30,
+      "ospfIfType": "Broadcast",
+      "localIfUsed": "10.1.30.3",
+      "area": "0.0.0.0",
+      "routerId": "123.30.30.30",
+      "networkType": "BROADCAST",
+      "cost": 10,
+      "transmitDelaySecs": 1,
+      "state": "DR",
+      "priority": 1,
+      "opaqueCapable": true,
+      "drId": "123.30.30.30",
+      "drAddress": "10.1.30.2",
+      "bdrId": "123.10.10.10",
+      "bdrAddress": "10.1.30.1",
+      "mcastMemberOspfAllRouters": true,
+      "mcastMemberOspfDesignatedRouters": true,
+      "timerMsecs": 10000,
+      "timerDeadSecs": 40,
+      "timerWaitSecs": 40,
+      "timerRetransmitSecs": 5,
+      "timerRetransmitWindowMsecs": 50,
+      "timerHelloInMsecs": 3970,
+      "nbrCount": 1,
+      "nbrAdjacentCount": 1,
+      "grHelloDelaySecs": 10,
+      "prefixSuppression": false,
+      "nbrFilterPrefixList": "N/A",
+      "lsaRetransmissions": 1
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "ospfInstance": 1,
+  "neighbors": {
+    "123.123.111.111": [
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 77189,
+        "routerDeadIntervalTimerDueMsec": 32814,
+        "upTime": "1m17s",
+        "deadTime": "32.814s",
+        "ifaceAddress": "10.14.111.2",
+        "ifaceName": "eth1:10.14.111.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ],
+    "123.123.110.110": [
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 72732,
+        "routerDeadIntervalTimerDueMsec": 33872,
+        "upTime": "1m12s",
+        "deadTime": "33.872s",
+        "ifaceAddress": "10.14.110.2",
+        "ifaceName": "eth2:10.14.110.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ]
+  }
+}

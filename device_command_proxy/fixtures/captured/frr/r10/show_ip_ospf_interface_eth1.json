@@ -1,0 +1,38 @@
+{
+  "ospfInstance": 1,
+  "interfaces": {
+    "eth1": {
+      "ifUp": true,
+      "ifIndex": 144754,
+      "mtuBytes": 9500,
+      "bandwidthMbit": 10000,
+      "ifFlags": "<UP,LOWER_UP,BROADCAST,RUNNING,MULTICAST>",
+      "ospfEnabled": true,
+      "ipAddress": "123.1.1.10",
+      "ipAddressPrefixlen": 24,
+      "ospfIfType": "Broadcast",
+      "localIfUsed": "123.1.1.255",
+      "area": "0.0.0.0",
+      "routerId": "123.10.10.10",
+      "networkType": "POINTOPOINT",
+      "cost": 15,
+      "transmitDelaySecs": 1,
+      "state": "Point-To-Point",
+      "priority": 1,
+      "opaqueCapable": true,
+      "mcastMemberOspfAllRouters": true,
+      "timerMsecs": 10000,
+      "timerDeadSecs": 40,
+      "timerWaitSecs": 40,
+      "timerRetransmitSecs": 5,
+      "timerRetransmitWindowMsecs": 50,
+      "timerHelloInMsecs": 5456,
+      "nbrCount": 1,
+      "nbrAdjacentCount": 1,
+      "grHelloDelaySecs": 10,
+      "prefixSuppression": false,
+      "nbrFilterPrefixList": "N/A",
+      "lsaRetransmissions": 3
+    }
+  }
+}

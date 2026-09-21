@@ -2,7 +2,7 @@
 
 Every operation below is called through `POST /v1/execute`. Each section lists the platforms that implement it and a real response. Lists are shortened to the first two entries.
 
-FRR and Junos examples are produced from sample device output shipped with the test suite; IOS XR examples are produced from captured device output replayed by the built-in fixture devices, so their `data_source` is `fixture`. A live device reports `data_source: "live"`.
+The examples are produced by the built-in fixture devices, which replay device output captured with `vtysh` (FRR) and from IOS XR through the same parsers a live device uses. Their `data_source` is therefore `fixture`; a live device reports `data_source: "live"`. Junos returns the same models, with the fields listed in `unsupported_fields` set to `null`.
 
 ## Response envelope
 
@@ -27,7 +27,7 @@ Platforms: FRR, Junos. OSPF adjacencies. One row per neighbor per interface.
 Request:
 
 ```json
-{"operation": "get_ospf_neighbors", "devices": ["frr1"], "arguments": {}}
+{"operation": "get_ospf_neighbors", "devices": ["123.10.10.10"], "arguments": {}}
 ```
 
 Response:
@@ -37,7 +37,7 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_ospf_neighbors",
       "platform": "frr",
       "status": "success",
@@ -45,19 +45,28 @@ Response:
         "instance": 1,
         "neighbors": [
           {
-            "router_id": "10.10.10.3",
+            "router_id": "123.123.100.100",
             "adjacency_state": "full",
-            "state_raw": "full/dr",
-            "role": "dr",
+            "state_raw": "full/-",
+            "role": "dr_other",
             "interface": "eth1",
-            "peer_address": "192.168.13.3",
-            "dead_time_ms": 39570
+            "peer_address": "123.1.1.100",
+            "dead_time_ms": 35616
+          },
+          {
+            "router_id": "123.123.100.100",
+            "adjacency_state": "full",
+            "state_raw": "full/-",
+            "role": "dr_other",
+            "interface": "eth2",
+            "peer_address": "10.10.100.2",
+            "dead_time_ms": 35615
           }
         ]
       },
-      "duration_ms": 2,
+      "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -70,7 +79,7 @@ Platforms: FRR, Junos. Adds the area and the adjacency state-change counter (fla
 Request:
 
 ```json
-{"operation": "get_ospf_neighbor_detail", "devices": ["frr1"], "arguments": {}}
+{"operation": "get_ospf_neighbor_detail", "devices": ["123.10.10.10"], "arguments": {}}
 ```
 
 Response:
@@ -80,7 +89,7 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_ospf_neighbor_detail",
       "platform": "frr",
       "status": "success",
@@ -88,21 +97,32 @@ Response:
         "instance": 1,
         "neighbors": [
           {
-            "router_id": "10.10.10.3",
-            "adjacency_state": "two_way",
-            "state_raw": "2-way/drother",
+            "router_id": "123.123.100.100",
+            "adjacency_state": "full",
+            "state_raw": "full/-",
             "role": "dr_other",
             "interface": "eth1",
-            "peer_address": "192.168.13.3",
-            "dead_time_ms": 39570,
+            "peer_address": "123.1.1.100",
+            "dead_time_ms": 35583,
             "area": "0.0.0.0",
-            "state_changes": 4
+            "state_changes": 5
+          },
+          {
+            "router_id": "123.123.100.100",
+            "adjacency_state": "full",
+            "state_raw": "full/-",
+            "role": "dr_other",
+            "interface": "eth2",
+            "peer_address": "10.10.100.2",
+            "dead_time_ms": 35583,
+            "area": "0.0.0.0",
+            "state_changes": 5
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -115,7 +135,7 @@ Platforms: FRR, Junos. Every OSPF interface: cost, timers, network type, neighbo
 Request:
 
 ```json
-{"operation": "get_ospf_interfaces", "devices": ["frr1"], "arguments": {}}
+{"operation": "get_ospf_interfaces", "devices": ["123.10.10.10"], "arguments": {}}
 ```
 
 Response:
@@ -125,7 +145,7 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_ospf_interfaces",
       "platform": "frr",
       "status": "success",
@@ -135,21 +155,35 @@ Response:
             "interface": "eth1",
             "up": true,
             "enabled": true,
-            "state": "DR",
-            "network_type": "broadcast_network",
-            "network_type_raw": "broadcast",
+            "state": "Point-To-Point",
+            "network_type": "point_to_point_network",
+            "network_type_raw": "pointopoint",
+            "area": "0.0.0.0",
+            "cost": 15,
+            "hello_interval_ms": 10000,
+            "dead_interval_sec": 40,
+            "neighbors": 1,
+            "adjacent_neighbors": 1
+          },
+          {
+            "interface": "eth2",
+            "up": true,
+            "enabled": true,
+            "state": "Point-To-Point",
+            "network_type": "point_to_point_network",
+            "network_type_raw": "pointopoint",
             "area": "0.0.0.0",
             "cost": 10,
             "hello_interval_ms": 10000,
             "dead_interval_sec": 40,
-            "neighbors": 2,
+            "neighbors": 1,
             "adjacent_neighbors": 1
           }
         ]
       },
       "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -162,7 +196,7 @@ Platforms: FRR, Junos. Same model as get_ospf_interfaces, filtered to one interf
 Request:
 
 ```json
-{"operation": "get_ospf_interface", "devices": ["frr1"], "arguments": {"interface": "eth1"}}
+{"operation": "get_ospf_interface", "devices": ["123.10.10.10"], "arguments": {"interface": "eth1"}}
 ```
 
 Response:
@@ -172,7 +206,7 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_ospf_interface",
       "platform": "frr",
       "status": "success",
@@ -182,21 +216,21 @@ Response:
             "interface": "eth1",
             "up": true,
             "enabled": true,
-            "state": "DR",
-            "network_type": "broadcast_network",
-            "network_type_raw": "broadcast",
+            "state": "Point-To-Point",
+            "network_type": "point_to_point_network",
+            "network_type_raw": "pointopoint",
             "area": "0.0.0.0",
-            "cost": 10,
+            "cost": 15,
             "hello_interval_ms": 10000,
             "dead_interval_sec": 40,
-            "neighbors": 2,
+            "neighbors": 1,
             "adjacent_neighbors": 1
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -209,7 +243,7 @@ Platforms: FRR, Junos. Router ID and per-area counters.
 Request:
 
 ```json
-{"operation": "get_ospf_status", "devices": ["frr1"], "arguments": {}}
+{"operation": "get_ospf_status", "devices": ["123.10.10.10"], "arguments": {}}
 ```
 
 Response:
@@ -219,26 +253,26 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_ospf_status",
       "platform": "frr",
       "status": "success",
       "data": {
         "instance": 1,
-        "router_id": "10.10.10.1",
+        "router_id": "123.10.10.10",
         "areas": [
           {
             "area": "0.0.0.0",
-            "active_interfaces": 3,
-            "full_neighbors": 2,
-            "spf_runs": 17,
-            "lsa_count": 9
+            "active_interfaces": 6,
+            "full_neighbors": 5,
+            "spf_runs": 24,
+            "lsa_count": 33
           }
         ]
       },
       "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -251,7 +285,7 @@ Platforms: FRR, Junos. Admin/oper state, addresses, MTU and speed of one interfa
 Request:
 
 ```json
-{"operation": "get_interface_status", "devices": ["frr1"], "arguments": {"interface": "eth1"}}
+{"operation": "get_interface_status", "devices": ["123.10.10.10"], "arguments": {"interface": "eth1"}}
 ```
 
 Response:
@@ -261,7 +295,7 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_interface_status",
       "platform": "frr",
       "status": "success",
@@ -270,14 +304,15 @@ Response:
         "admin_up": true,
         "oper_up": true,
         "addresses": [
-          "192.168.13.1/24"
+          "123.1.1.10/24",
+          "fe80::a8c1:abff:fe6f:4dd0/64"
         ],
         "mtu": 9500,
         "speed_mbps": 10000
       },
       "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -290,7 +325,7 @@ Platforms: FRR, Junos. Routes matching one prefix, with next hops.
 Request:
 
 ```json
-{"operation": "get_route", "devices": ["frr1"], "arguments": {"prefix": "10.10.10.6/32"}}
+{"operation": "get_route", "devices": ["123.10.10.10"], "arguments": {"prefix": "123.30.30.30/32"}}
 ```
 
 Response:
@@ -300,24 +335,24 @@ Response:
   "request_id": "",
   "results": [
     {
-      "device": "frr1",
+      "device": "123.10.10.10",
       "operation": "get_route",
       "platform": "frr",
       "status": "success",
       "data": {
-        "prefix": "10.10.10.6/32",
-        "matched_prefix": "10.10.10.0/24",
+        "prefix": "123.30.30.30/32",
+        "matched_prefix": "123.30.30.30/32",
         "found": true,
         "routes": [
           {
             "protocol": "ospf",
             "selected": true,
             "distance": 110,
-            "metric": 20,
+            "metric": 1,
             "next_hops": [
               {
-                "address": "192.168.13.3",
-                "interface": "eth1",
+                "address": "10.1.30.2",
+                "interface": "eth5",
                 "active": true
               }
             ]
@@ -326,7 +361,7 @@ Response:
       },
       "duration_ms": 0,
       "unsupported_fields": [],
-      "data_source": "live"
+      "data_source": "fixture"
     }
   ]
 }
@@ -423,7 +458,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -517,7 +552,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 2,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -596,7 +631,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -641,7 +676,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -691,7 +726,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -744,7 +779,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 2,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -820,7 +855,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -869,7 +904,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 2,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -910,7 +945,7 @@ Response:
           }
         ]
       },
-      "duration_ms": 1,
+      "duration_ms": 0,
       "unsupported_fields": [],
       "data_source": "fixture"
     }
@@ -951,7 +986,7 @@ Device missing from the inventory:
   "request_id": "",
   "results": [
     {
-      "device": "frr1x",
+      "device": "no-such-device",
       "operation": "get_ospf_neighbors",
       "platform": "unknown",
       "status": "error",

@@ -24,5 +24,20 @@
     "host": "123.123.200.200",
     "platform": "iosxr",
     "transport": "fixture"
+  },
+  "123.10.10.10": {
+    "host": "123.10.10.10",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.30.30.30": {
+    "host": "123.30.30.30",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.14.14.14": {
+    "host": "123.14.14.14",
+    "platform": "frr",
+    "transport": "fixture"
   }
 }

@@ -110,9 +110,9 @@ token and without device data.
 ## Try it without devices
 
 Devices with `"transport": "fixture"` never open SSH. The proxy replays captured
-IOS XR output through the same parser a live device goes through. This is the
-quickest way to check an install and to see real output for RSVP, BGP, IS-IS,
-VRF, MPLS and LDP.
+FRR and IOS XR output through the same parser a live device goes through. This
+is the quickest way to check an install and to see real output for OSPF, routes,
+RSVP, BGP, IS-IS, VRF, MPLS and LDP.
 
 Requirements: Python 3.12+ and `openssh-client` (the service checks for the
 `ssh` binary at startup).
@@ -123,6 +123,9 @@ venv/bin/pip install -e .
 
 cat > inventory.demo.json <<'EOF'
 {
+  "123.10.10.10":    {"host": "123.10.10.10",    "platform": "frr",   "transport": "fixture"},
+  "123.30.30.30":    {"host": "123.30.30.30",    "platform": "frr",   "transport": "fixture"},
+  "123.14.14.14":    {"host": "123.14.14.14",    "platform": "frr",   "transport": "fixture"},
   "123.123.31.31":   {"host": "123.123.31.31",   "platform": "iosxr", "transport": "fixture"},
   "123.123.100.100": {"host": "123.123.100.100", "platform": "iosxr", "transport": "fixture"},
   "123.123.200.200": {"host": "123.123.200.200", "platform": "iosxr", "transport": "fixture"}
@@ -143,19 +146,20 @@ curl -s localhost:8080/health
 curl -s -X POST localhost:8080/v1/execute \
   -H "Authorization: Bearer $EXECUTION_PROXY_TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"operation":"get_rsvp_lsps","devices":["123.123.31.31"]}'
+  -d '{"operation":"get_ospf_neighbors","devices":["123.10.10.10"]}'
 ```
 
 Each demo device answers only the commands it has a capture for:
 
 | Device | Operations |
 |---|---|
+| `123.10.10.10`, `123.30.30.30`, `123.14.14.14` (FRR) | every FRR operation, with `interface` `eth1` and `prefix` `123.30.30.30/32` (`123.14.14.14/32` on `123.30.30.30`) |
 | `123.123.31.31` | `get_rsvp_lsps`, `get_vrf_detail`, `get_mpls_forwarding`, `get_ldp_neighbors` |
 | `123.123.100.100` | `get_bgp_summary`, `get_bgp_neighbor_detail` |
 | `123.123.200.200` | `get_isis_neighbors`, `get_isis_interface`, `get_isis_database` |
 
-Any other operation returns `fixture_not_found`. To demo another operation, add
-a captured `.txt` file under `device_command_proxy/fixtures/captured/` and map
+Any other operation, or an argument other than the ones above, returns
+`fixture_not_found`. To demo another operation, add a captured `.txt` file under `device_command_proxy/fixtures/captured/` and map
 the exact command to it in `device_command_proxy/fixtures/demo/<device>.json`.
 
 ## Run against real devices

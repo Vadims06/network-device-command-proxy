@@ -1,0 +1,109 @@
+{
+  "ospfInstance": 1,
+  "neighbors": {
+    "123.10.10.10": [
+      {
+        "ifaceAddress": "10.1.30.1",
+        "areaId": "0.0.0.0",
+        "ifaceName": "eth1",
+        "localIfaceAddress": "10.1.30.2",
+        "nbrPriority": 1,
+        "nbrState": "Full/Backup",
+        "role": "Backup",
+        "stateChangeCounter": 5,
+        "lsaRetransmissions": 1,
+        "lastPrgrsvChangeMsec": 40970,
+        "routerDesignatedId": "123.30.30.30",
+        "routerDesignatedBackupId": "123.10.10.10",
+        "optionsCounter": 2,
+        "optionsList": "*|-|-|-|-|-|E|-",
+        "routerDeadIntervalTimerDueMsec": 34070,
+        "nonHelloDeadTimerResets": 0,
+        "databaseSummaryListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "linkStateRetransmissionListCounter": 0,
+        "threadInactivityTimer": "on",
+        "threadLinkStateRequestRetransmission": "on",
+        "grHelperStatus": "None"
+      }
+    ],
+    "123.123.30.30": [
+      {
+        "ifaceAddress": "10.30.130.2",
+        "areaId": "0.0.0.1",
+        "ifaceName": "eth3",
+        "localIfaceAddress": "10.30.130.1",
+        "nbrPriority": 1,
+        "nbrState": "Full/DR",
+        "role": "DR",
+        "stateChangeCounter": 6,
+        "lsaRetransmissions": 1,
+        "lastPrgrsvChangeMsec": 45919,
+        "routerDesignatedId": "123.123.30.30",
+        "routerDesignatedBackupId": "123.30.30.30",
+        "optionsCounter": 2,
+        "optionsList": "*|-|-|-|-|-|E|-",
+        "routerDeadIntervalTimerDueMsec": 34087,
+        "nonHelloDeadTimerResets": 0,
+        "databaseSummaryListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "linkStateRetransmissionListCounter": 0,
+        "threadInactivityTimer": "on",
+        "threadLinkStateRequestRetransmission": "on",
+        "grHelperStatus": "None"
+      }
+    ],
+    "123.123.31.31": [
+      {
+        "ifaceAddress": "10.30.131.2",
+        "areaId": "0.0.0.1",
+        "ifaceName": "eth2",
+        "localIfaceAddress": "10.30.131.1",
+        "nbrPriority": 1,
+        "nbrState": "Full/DR",
+        "role": "DR",
+        "stateChangeCounter": 6,
+        "lsaRetransmissions": 2,
+        "lastPrgrsvChangeMsec": 45403,
+        "routerDesignatedId": "123.123.31.31",
+        "routerDesignatedBackupId": "123.30.30.30",
+        "optionsCounter": 2,
+        "optionsList": "*|-|-|-|-|-|E|-",
+        "routerDeadIntervalTimerDueMsec": 34601,
+        "nonHelloDeadTimerResets": 0,
+        "databaseSummaryListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "linkStateRetransmissionListCounter": 0,
+        "threadInactivityTimer": "on",
+        "threadLinkStateRequestRetransmission": "on",
+        "grHelperStatus": "None"
+      }
+    ],
+    "123.31.31.31": [
+      {
+        "ifaceAddress": "10.30.31.2",
+        "areaId": "0.0.0.1",
+        "ifaceName": "eth4",
+        "localIfaceAddress": "10.30.31.1",
+        "nbrPriority": 1,
+        "nbrState": "Full/DR",
+        "role": "DR",
+        "stateChangeCounter": 6,
+        "lsaRetransmissions": 3,
+        "lastPrgrsvChangeMsec": 44610,
+        "routerDesignatedId": "123.31.31.31",
+        "routerDesignatedBackupId": "123.30.30.30",
+        "optionsCounter": 2,
+        "optionsList": "*|-|-|-|-|-|E|-",
+        "routerDeadIntervalTimerDueMsec": 35394,
+        "nonHelloDeadTimerResets": 0,
+        "databaseSummaryListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "linkStateRetransmissionListCounter": 0,
+        "threadInactivityTimer": "on",
+        "threadLinkStateRequestRetransmission": "on",
+        "grHelperStatus": "None"
+      }
+    ]
+  }
+}

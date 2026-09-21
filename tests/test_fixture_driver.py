@@ -1,8 +1,12 @@
 """A transport=fixture device replays captured text through the real vendor
 parser instead of opening SSH; a transport=ssh device is unaffected."""
 
+import pytest
+
 from device_command_proxy.contracts import DeviceProfile, ErrorCode, ExecutionError, Transport
 from device_command_proxy.fixture_driver import _FixtureSession
+from device_command_proxy.operation_types import ArgumentKind
+from device_command_proxy.operations import OPERATION_SPECS
 from device_command_proxy.platforms.frr.driver import create_adapter as create_frr_adapter
 from device_command_proxy.platforms.iosxr.driver import create_adapter as create_iosxr_adapter
 
@@ -81,3 +85,76 @@ def test_ssh_transport_device_does_not_build_a_fixture_driver():
     driver = adapter._driver_factory()
 
     assert not isinstance(driver, _FixtureSession)
+
+
+# Literal values read by eye from the captured lab output under
+# fixtures/captured/frr/<router>/, not derived from the parser under test.
+FRR_DEMO_NEIGHBORS = {
+    "123.10.10.10": [
+        ("123.123.100.100", "eth1"),
+        ("123.123.100.100", "eth2"),
+        ("123.123.101.101", "eth3"),
+        ("123.11.11.11", "eth4"),
+        ("123.30.30.30", "eth5"),
+    ],
+    "123.30.30.30": [
+        ("123.10.10.10", "eth1"),
+        ("123.123.30.30", "eth3"),
+        ("123.123.31.31", "eth2"),
+        ("123.31.31.31", "eth4"),
+    ],
+    "123.14.14.14": [("123.123.111.111", "eth1"), ("123.123.110.110", "eth2")],
+}
+FRR_DEMO_ROUTES = {
+    "123.10.10.10": ("123.30.30.30/32", [("10.1.30.2", "eth5")]),
+    "123.30.30.30": ("123.14.14.14/32", [("10.1.30.1", "eth1")]),
+    "123.14.14.14": ("123.30.30.30/32", [("10.14.110.2", "eth2"), ("10.14.111.2", "eth1")]),
+}
+
+
+def _frr_demo_adapter(device_name):
+    return create_frr_adapter(
+        DeviceProfile(
+            name=device_name,
+            host=device_name,
+            port=22,
+            platform="frr",
+            credential_profile="",
+            transport=Transport.FIXTURE,
+        ),
+        credentials=None,
+    )
+
+
+@pytest.mark.parametrize("device_name", FRR_DEMO_NEIGHBORS)
+def test_frr_demo_device_lists_its_ospf_neighbors(device_name):
+    result = _frr_demo_adapter(device_name).run("get_ospf_neighbors")
+
+    assert [(n["router_id"], n["interface"]) for n in result["neighbors"]] == FRR_DEMO_NEIGHBORS[device_name]
+    assert {n["adjacency_state"] for n in result["neighbors"]} == {"full"}
+
+
+@pytest.mark.parametrize("device_name", FRR_DEMO_ROUTES)
+def test_frr_demo_device_resolves_its_route(device_name):
+    prefix, next_hops = FRR_DEMO_ROUTES[device_name]
+
+    result = _frr_demo_adapter(device_name).run("get_route", prefix=prefix)
+
+    assert result["matched_prefix"] == prefix
+    assert [(h["address"], h["interface"]) for h in result["routes"][0]["next_hops"]] == next_hops
+
+
+@pytest.mark.parametrize("device_name", FRR_DEMO_ROUTES)
+@pytest.mark.parametrize("operation", sorted(_frr_demo_adapter("123.10.10.10")._operation_handlers))
+def test_every_frr_operation_is_answered_by_every_frr_demo_device(device_name, operation):
+    """A capture missing for one operation would surface as fixture_not_found."""
+    spec = OPERATION_SPECS[operation]
+    arguments = {
+        ArgumentKind.NONE: {},
+        ArgumentKind.INTERFACE: {"interface": "eth1"},
+        ArgumentKind.PREFIX: {"prefix": FRR_DEMO_ROUTES[device_name][0]},
+    }[spec.argument_kind]
+
+    result = _frr_demo_adapter(device_name).run(operation, **arguments)
+
+    assert spec.response_model.model_validate(result)

@@ -1,0 +1,88 @@
+{
+  "ospfInstance": 1,
+  "neighbors": {
+    "123.123.100.100": [
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 69825,
+        "routerDeadIntervalTimerDueMsec": 35616,
+        "upTime": "1m09s",
+        "deadTime": "35.616s",
+        "ifaceAddress": "123.1.1.100",
+        "ifaceName": "eth1:123.1.1.10",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      },
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 69825,
+        "routerDeadIntervalTimerDueMsec": 35615,
+        "upTime": "1m09s",
+        "deadTime": "35.615s",
+        "ifaceAddress": "10.10.100.2",
+        "ifaceName": "eth2:10.10.100.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ],
+    "123.123.101.101": [
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 69825,
+        "routerDeadIntervalTimerDueMsec": 35961,
+        "upTime": "1m09s",
+        "deadTime": "35.961s",
+        "ifaceAddress": "10.10.101.2",
+        "ifaceName": "eth3:10.10.101.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ],
+    "123.11.11.11": [
+      {
+        "nbrState": "Full/-",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DROther",
+        "upTimeInMsec": 74518,
+        "routerDeadIntervalTimerDueMsec": 35484,
+        "upTime": "1m14s",
+        "deadTime": "35.484s",
+        "ifaceAddress": "10.10.11.2",
+        "ifaceName": "eth4:10.10.11.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ],
+    "123.30.30.30": [
+      {
+        "nbrState": "Full/DR",
+        "nbrPriority": 1,
+        "converged": "Full",
+        "role": "DR",
+        "upTimeInMsec": 39486,
+        "routerDeadIntervalTimerDueMsec": 35516,
+        "upTime": "39.486s",
+        "deadTime": "35.516s",
+        "ifaceAddress": "10.1.30.2",
+        "ifaceName": "eth5:10.1.30.1",
+        "linkStateRetransmissionListCounter": 0,
+        "linkStateRequestListCounter": 0,
+        "databaseSummaryListCounter": 0
+      }
+    ]
+  }
+}
