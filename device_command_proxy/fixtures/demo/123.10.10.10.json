@@ -1,9 +1,9 @@
 {
-  "show ip ospf neighbor json": "captured/frr/r10/show_ip_ospf_neighbor.json",
-  "show ip ospf neighbor detail json": "captured/frr/r10/show_ip_ospf_neighbor_detail.json",
-  "show ip ospf interface json": "captured/frr/r10/show_ip_ospf_interface.json",
-  "show ip ospf interface eth1 json": "captured/frr/r10/show_ip_ospf_interface_eth1.json",
-  "show ip ospf json": "captured/frr/r10/show_ip_ospf.json",
-  "show interface eth1 json": "captured/frr/r10/show_interface_eth1.json",
-  "show ip route 123.30.30.30/32 json": "captured/frr/r10/show_ip_route_123.30.30.30_32.json"
+  "show ip ospf neighbor json": "captured/frr/123.10.10.10/show_ip_ospf_neighbor.json",
+  "show ip ospf neighbor detail json": "captured/frr/123.10.10.10/show_ip_ospf_neighbor_detail.json",
+  "show ip ospf interface json": "captured/frr/123.10.10.10/show_ip_ospf_interface.json",
+  "show ip ospf interface eth1 json": "captured/frr/123.10.10.10/show_ip_ospf_interface_eth1.json",
+  "show ip ospf json": "captured/frr/123.10.10.10/show_ip_ospf.json",
+  "show interface eth1 json": "captured/frr/123.10.10.10/show_interface_eth1.json",
+  "show ip route 123.30.30.30/32 json": "captured/frr/123.10.10.10/show_ip_route_123.30.30.30_32.json"
 }

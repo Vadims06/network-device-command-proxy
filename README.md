@@ -126,6 +126,14 @@ cat > inventory.demo.json <<'EOF'
   "123.10.10.10":    {"host": "123.10.10.10",    "platform": "frr",   "transport": "fixture"},
   "123.30.30.30":    {"host": "123.30.30.30",    "platform": "frr",   "transport": "fixture"},
   "123.14.14.14":    {"host": "123.14.14.14",    "platform": "frr",   "transport": "fixture"},
+  "123.11.11.11":    {"host": "123.11.11.11",    "platform": "frr",   "transport": "fixture"},
+  "123.13.13.13":    {"host": "123.13.13.13",    "platform": "frr",   "transport": "fixture"},
+  "123.15.15.15":    {"host": "123.15.15.15",    "platform": "frr",   "transport": "fixture"},
+  "123.31.31.31":    {"host": "123.31.31.31",    "platform": "frr",   "transport": "fixture"},
+  "123.123.101.101": {"host": "123.123.101.101", "platform": "frr",   "transport": "fixture"},
+  "123.123.110.110": {"host": "123.123.110.110", "platform": "frr",   "transport": "fixture"},
+  "123.123.111.111": {"host": "123.123.111.111", "platform": "frr",   "transport": "fixture"},
+  "123.123.30.30":   {"host": "123.123.30.30",   "platform": "frr",   "transport": "fixture"},
   "123.123.31.31":   {"host": "123.123.31.31",   "platform": "iosxr", "transport": "fixture"},
   "123.123.100.100": {"host": "123.123.100.100", "platform": "iosxr", "transport": "fixture"},
   "123.123.200.200": {"host": "123.123.200.200", "platform": "iosxr", "transport": "fixture"}
@@ -153,7 +161,7 @@ Each demo device answers only the commands it has a capture for:
 
 | Device | Operations |
 |---|---|
-| `123.10.10.10`, `123.30.30.30`, `123.14.14.14` (FRR) | every FRR operation, with `interface` `eth1` and `prefix` `123.30.30.30/32` (`123.14.14.14/32` on `123.30.30.30`) |
+| `123.10.10.10`, `123.30.30.30`, `123.14.14.14`, `123.11.11.11`, `123.13.13.13`, `123.15.15.15`, `123.31.31.31`, `123.123.101.101`, `123.123.110.110`, `123.123.111.111`, `123.123.30.30` (FRR) | every FRR operation, with `interface` `eth1`; `prefix` per device, see [PROVENANCE.md](device_command_proxy/fixtures/captured/frr/PROVENANCE.md) |
 | `123.123.31.31` | `get_rsvp_lsps`, `get_vrf_detail`, `get_mpls_forwarding`, `get_ldp_neighbors` |
 | `123.123.100.100` | `get_bgp_summary`, `get_bgp_neighbor_detail` |
 | `123.123.200.200` | `get_isis_neighbors`, `get_isis_interface`, `get_isis_database` |

@@ -1,0 +1,52 @@
+{
+  "eth1":{
+    "administrativeStatus":"up",
+    "operationalStatus":"up",
+    "linkDetection":true,
+    "linkUps":1,
+    "linkDowns":3,
+    "lastLinkUp":"2026/09/21 20:18:50.20",
+    "lastLinkDown":"2026/09/21 20:18:50.02",
+    "vrfName":"default",
+    "mplsEnabled":false,
+    "linkDown":false,
+    "linkDownV6":false,
+    "mcForwardingV4":false,
+    "mcForwardingV6":false,
+    "bgpRAConfigured":false,
+    "multicastConfig":"Not specified by CLI",
+    "shutdownConfig":"Not specified by CLI",
+    "mplsConfig":"Not specified by CLI",
+    "speedChecked":2,
+    "pseudoInterface":false,
+    "index":144726,
+    "metric":0,
+    "mtu":9500,
+    "speed":10000,
+    "txqlen":0,
+    "flags":"<UP,LOWER_UP,BROADCAST,RUNNING,MULTICAST>",
+    "type":"Ethernet",
+    "hardwareAddress":"aa:c1:ab:d3:31:21",
+    "ipAddresses":[
+      {
+        "address":"10.15.111.1/30",
+        "secondary":false,
+        "noPrefixRoute":false,
+        "unnumbered":false
+      },
+      {
+        "address":"fe80::a8c1:abff:fed3:3121/64",
+        "secondary":false,
+        "noPrefixRoute":false,
+        "unnumbered":false
+      }
+    ],
+    "interfaceType":"VETH",
+    "interfaceSlaveType":"None",
+    "lacpBypass":false,
+    "evpnMh":{},
+    "protodown":"off",
+    "parentIfindex":144725,
+    "carrierChanges":2
+  }
+}

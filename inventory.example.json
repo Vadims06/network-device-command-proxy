@@ -39,5 +39,45 @@
     "host": "123.14.14.14",
     "platform": "frr",
     "transport": "fixture"
+  },
+  "123.11.11.11": {
+    "host": "123.11.11.11",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.13.13.13": {
+    "host": "123.13.13.13",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.15.15.15": {
+    "host": "123.15.15.15",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.31.31.31": {
+    "host": "123.31.31.31",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.123.101.101": {
+    "host": "123.123.101.101",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.123.110.110": {
+    "host": "123.123.110.110",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.123.111.111": {
+    "host": "123.123.111.111",
+    "platform": "frr",
+    "transport": "fixture"
+  },
+  "123.123.30.30": {
+    "host": "123.123.30.30",
+    "platform": "frr",
+    "transport": "fixture"
   }
 }
