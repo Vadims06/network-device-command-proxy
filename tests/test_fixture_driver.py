@@ -165,6 +165,22 @@ FRR_DEMO_ROUTES = {
 }
 
 
+# (vni, type, vrf, local_vtep, remote_vteps, mac_count) read by eye from the
+# 13-hosts-demo-bgp capture; the other FRR demo devices carry no VNI.
+FRR_DEMO_EVPN_VNIS = {
+    "123.14.14.14": [
+        (1010, "l2", "tenant1", "123.14.14.14", ["123.123.30.30", "123.123.31.31", "123.15.15.15"], 1),
+        (5000, "l3", "tenant1", "123.14.14.14", None, None),
+    ],
+    "123.123.30.30": [
+        (1010, "l2", "tenant1", "123.123.30.30", ["123.123.31.31", "123.15.15.15", "123.14.14.14"], 1),
+        (1020, "l2", "tenant1", "123.123.30.30", ["123.123.31.31"], 0),
+        (5000, "l3", "tenant1", "123.123.30.30", None, None),
+    ],
+    "123.10.10.10": [],
+}
+
+
 def _frr_demo_adapter(device_name):
     return create_frr_adapter(
         DeviceProfile(
@@ -211,3 +227,37 @@ def test_every_frr_operation_is_answered_by_every_frr_demo_device(device_name, o
     result = _frr_demo_adapter(device_name).run(operation, **arguments)
 
     assert spec.response_model.model_validate(result)
+
+
+@pytest.mark.parametrize("device_name", FRR_DEMO_EVPN_VNIS)
+def test_frr_demo_device_lists_its_evpn_vnis(device_name):
+    result = _frr_demo_adapter(device_name).run("get_evpn_vnis")
+
+    assert [(vni["vni"], vni["type"], vni["vrf"], vni["local_vtep"],
+             None if vni["remote_vteps"] is None else [vtep["ip"] for vtep in vni["remote_vteps"]],
+             vni["mac_count"]) for vni in result["vnis"]] == FRR_DEMO_EVPN_VNIS[device_name]
+
+
+
+def test_frr_evpn_vnis_rejects_output_that_is_not_a_vni_list(monkeypatch):
+    adapter = _frr_demo_adapter("123.14.14.14")
+    monkeypatch.setattr(adapter, "_send_command", lambda command: {"error": "unsupported"})
+
+    with pytest.raises(ExecutionError) as error:
+        adapter.run("get_evpn_vnis")
+
+    assert error.value.code == ErrorCode.PARSE_ERROR
+
+
+def test_frr_evpn_l2_vni_without_peers_has_an_empty_remote_vtep_list(monkeypatch):
+    adapter = _frr_demo_adapter("123.14.14.14")
+    monkeypatch.setattr(
+        adapter, "_send_command",
+        lambda command: {"vni": 1020, "type": "L2", "vtepIp": "123.14.14.14", "tenantVrf": "tenant1",
+                         "numRemoteVteps": 0, "numMacs": 0},
+    )
+
+    vni = adapter.run("get_evpn_vnis")["vnis"][0]
+
+    assert vni["remote_vteps"] == []
+    assert vni["mac_count"] == 0

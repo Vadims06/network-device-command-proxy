@@ -19,7 +19,7 @@ it exposes each operation below as an MCP tool.
 
 ## What is supported
 
-Platforms: **FRR**, **Junos**, **Cisco IOS XR**. Sixteen operations, all
+Platforms: **FRR**, **Junos**, **Cisco IOS XR**. Seventeen operations, all
 read-only. A platform implements only the operations marked below; asking for
 another returns `unsupported_operation` for that device.
 
@@ -41,6 +41,7 @@ another returns `unsupported_operation` for that device.
 | `get_isis_database` | none | | | ✓ |
 | `get_mpls_forwarding` | none | | | ✓ |
 | `get_ldp_neighbors` | none | | | ✓ |
+| `get_evpn_vnis` | none | ✓ | | |
 
 ### Device commands behind each operation
 
@@ -62,6 +63,7 @@ another returns `unsupported_operation` for that device.
 | `get_isis_database` | | | `show isis database detail` |
 | `get_mpls_forwarding` | | | `show mpls forwarding` |
 | `get_ldp_neighbors` | | | `show mpls ldp neighbor detail` |
+| `get_evpn_vnis` | `show evpn vni detail json` | | |
 
 `interface` accepts letters, digits and `_ . : / -`; `prefix` must parse as an
 IP network. Anything else is rejected with `invalid_request` before a device is

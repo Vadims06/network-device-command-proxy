@@ -8,7 +8,7 @@ banner (unrelated `vtysh.conf` warning, not device output) was dropped; no
 value was edited. `123.123.31.31` and `123.123.100.100` are excluded, those
 router-ids are already IOS XR demo devices for RSVP/VRF and BGP.
 
-Each demo device answers the seven commands below, with the interface and
+Each demo device answers the eight commands below, with the interface and
 prefix arguments shown; any other argument returns `fixture_not_found`.
 
 | Device | Interface | Prefix |
