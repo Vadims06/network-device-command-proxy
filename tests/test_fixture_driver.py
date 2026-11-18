@@ -211,3 +211,27 @@ def test_every_frr_operation_is_answered_by_every_frr_demo_device(device_name, o
     result = _frr_demo_adapter(device_name).run(operation, **arguments)
 
     assert spec.response_model.model_validate(result)
+
+
+_DEMO_RR = DeviceProfile(
+    name="123.123.100.100",
+    host="123.123.100.100",
+    port=22,
+    platform="iosxr",
+    credential_profile="",
+    transport=Transport.FIXTURE,
+)
+
+
+def test_demo_route_reflector_bgp_matches_its_topology_identity():
+    adapter = create_iosxr_adapter(_DEMO_RR, credentials=None)
+
+    summary = adapter.run("get_bgp_summary")
+    detail = adapter.run("get_bgp_neighbor_detail")
+
+    for family in summary["address_families"]:
+        assert family["router_id"] == "123.123.100.100"
+        assert family["local_as"] == 65000
+        assert [peer["neighbor"] for peer in family["neighbors"]] == ["123.123.30.30", "123.123.31.31"]
+    assert [peer["neighbor"] for peer in detail["neighbors"]] == ["123.123.30.30", "123.123.31.31"]
+    assert [peer["remote_as"] for peer in detail["neighbors"]] == [65000, 65000]

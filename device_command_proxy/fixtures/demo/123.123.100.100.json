@@ -1,4 +1,4 @@
 {
-  "show bgp instance all all all summary": "captured/cisco_iosxr/show_bgp_instance_summary.txt",
-  "show bgp instance all all all neighbors detail": "captured/cisco_iosxr/show_bgp_instance_neighbors_detail.txt"
+  "show bgp instance all all all summary": "captured/cisco_iosxr/demo_rr1/show_bgp_instance_summary.txt",
+  "show bgp instance all all all neighbors detail": "captured/cisco_iosxr/demo_rr1/show_bgp_instance_neighbors_detail.txt"
 }

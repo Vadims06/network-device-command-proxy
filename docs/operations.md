@@ -585,20 +585,20 @@ Response:
         "address_families": [
           {
             "address_family": "vpnv4 unicast",
-            "router_id": "10.4.1.1",
-            "local_as": 100,
+            "router_id": "123.123.100.100",
+            "local_as": 65000,
             "neighbors": [
               {
-                "neighbor": "10.16.2.2",
-                "remote_as": 100,
+                "neighbor": "123.123.30.30",
+                "remote_as": 65000,
                 "messages_received": 59,
                 "messages_sent": 56,
                 "up_down": "00:50:38",
                 "state_or_prefixes_received": "10"
               },
               {
-                "neighbor": "10.36.3.3",
-                "remote_as": 100,
+                "neighbor": "123.123.31.31",
+                "remote_as": 65000,
                 "messages_received": 68,
                 "messages_sent": 58,
                 "up_down": "00:47:11",
@@ -608,20 +608,20 @@ Response:
           },
           {
             "address_family": "vpnv6 unicast",
-            "router_id": "10.4.1.1",
-            "local_as": 100,
+            "router_id": "123.123.100.100",
+            "local_as": 65000,
             "neighbors": [
               {
-                "neighbor": "10.16.2.2",
-                "remote_as": 100,
+                "neighbor": "123.123.30.30",
+                "remote_as": 65000,
                 "messages_received": 59,
                 "messages_sent": 56,
                 "up_down": "00:50:38",
                 "state_or_prefixes_received": "10"
               },
               {
-                "neighbor": "10.36.3.3",
-                "remote_as": 100,
+                "neighbor": "123.123.31.31",
+                "remote_as": 65000,
                 "messages_received": 68,
                 "messages_sent": 58,
                 "up_down": "00:47:11",
@@ -663,12 +663,24 @@ Response:
       "data": {
         "neighbors": [
           {
-            "neighbor": "10.4.1.1",
+            "neighbor": "123.123.30.30",
             "remote_as": 65000,
             "local_as": 65000,
-            "remote_router_id": "10.4.1.1",
+            "remote_router_id": "123.123.30.30",
             "state": "Established",
-            "up_time": "1w1d",
+            "up_time": "00:50:38",
+            "hold_time_sec": 180,
+            "keepalive_interval_sec": 60,
+            "messages_received": 44766,
+            "messages_sent": 40667
+          },
+          {
+            "neighbor": "123.123.31.31",
+            "remote_as": 65000,
+            "local_as": 65000,
+            "remote_router_id": "123.123.31.31",
+            "state": "Established",
+            "up_time": "00:47:11",
             "hold_time_sec": 180,
             "keepalive_interval_sec": 60,
             "messages_received": 44766,
