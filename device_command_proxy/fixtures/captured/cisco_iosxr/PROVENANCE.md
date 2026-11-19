@@ -22,3 +22,5 @@ ship these `.txt` files at all - fetched from the GitHub source tree.
 | `show_isis_database_detail.txt` | `ShowIsisDatabaseDetail/cli/equal/golden_output_1_output.txt` | `show isis database detail`, separate Level-1 and Level-2 sections, 11 LSPs each |
 | `show_mpls_forwarding.txt` | `ShowMplsForwarding/cli/equal/golden_output_1_output.txt` | `show mpls forwarding`, 12 label entries mixing `Pop` and swap outgoing labels |
 | `show_mpls_ldp_neighbor_detail.txt` | `ShowMplsLdpNeighborDetail/cli/equal/golden_output_1_output.txt` | `show mpls ldp neighbor detail`, one peer with discovery sources and bound addresses |
+
+`demo_rr1/show_bgp_instance_*.txt` are not captures: they are the two BGP files above with the router id, AS number and neighbor addresses rewritten so the demo device `123.123.100.100` matches the Topolograph BGP demo topology (router id `123.123.100.100`, AS 65000, neighbors `123.123.30.30` and `123.123.31.31`). The parser oracle tests keep reading the unmodified files.
