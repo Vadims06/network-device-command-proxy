@@ -20,3 +20,4 @@ profile-paths.json
 # .env.example's quick-start example.
 id_ed25519
 id_ed25519-cert.pub
+build/

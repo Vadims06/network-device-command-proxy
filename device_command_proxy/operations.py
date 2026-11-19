@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from device_command_proxy.schemas import (
     BgpNeighborDetails,
     BgpSummary,
+    EvpnVnis,
     InterfaceStatus,
     IsisDatabase,
     IsisInterfaces,
@@ -80,6 +81,9 @@ OPERATION_SPECS = {
     ),
     Operation.GET_LDP_NEIGHBORS: OperationSpec(
         Operation.GET_LDP_NEIGHBORS, ArgumentKind.NONE, MplsLdpNeighbors
+    ),
+    Operation.GET_EVPN_VNIS: OperationSpec(
+        Operation.GET_EVPN_VNIS, ArgumentKind.NONE, EvpnVnis
     ),
 }
 

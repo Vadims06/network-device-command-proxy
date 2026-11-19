@@ -3,6 +3,7 @@
 Shared by the schema conformance test so every operation is exercised against
 real vendor output shapes rather than against hand-built neutral dicts.
 """
+import json
 import os
 
 import device_command_proxy
@@ -105,6 +106,9 @@ FRR_OUTPUT = {
     },
 }
 FRR_OUTPUT["get_ospf_interfaces"] = FRR_OUTPUT["get_ospf_interface"]
+with open(os.path.join(os.path.dirname(device_command_proxy.__file__), "fixtures", "captured", "frr",
+                       "123.123.30.30", "show_evpn_vni_detail.json")) as evpn_file:
+    FRR_OUTPUT["get_evpn_vnis"] = json.load(evpn_file)
 
 
 JUNOS_OUTPUT = {

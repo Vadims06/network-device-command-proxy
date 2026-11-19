@@ -14,6 +14,10 @@ from device_command_proxy.operation_types import Operation
 from device_command_proxy.platforms import neutral
 from device_command_proxy.platforms.base import DeviceAdapter
 from device_command_proxy.schemas import (
+    EvpnRemoteVtep,
+    EvpnVni,
+    EvpnVnis,
+    EvpnVniType,
     InterfaceStatus,
     OspfArea,
     OspfInterface,
@@ -95,6 +99,7 @@ class FrrAdapter(DeviceAdapter):
             Operation.GET_OSPF_INTERFACES: self._get_ospf_interfaces,
             Operation.GET_OSPF_STATUS: self._get_ospf_status,
             Operation.GET_ROUTE: self._get_route,
+            Operation.GET_EVPN_VNIS: self._get_evpn_vnis,
         }
 
     def _get_ospf_neighbors(self) -> OspfNeighbors:
@@ -245,3 +250,32 @@ class FrrAdapter(DeviceAdapter):
             found=bool(routes),
             routes=routes,
         )
+
+    def _get_evpn_vnis(self) -> EvpnVnis:
+        payload = self._send_command("show evpn vni detail json")
+        # several VNIs print a list, one prints an object, none prints {}
+        if isinstance(payload, list):
+            entries = payload
+        else:
+            if payload and "vni" not in payload:
+                raise ValueError("unexpected show evpn vni detail output")
+            entries = [payload] if payload else []
+        vnis = []
+        for entry in sorted(entries, key=lambda entry: entry["vni"]):
+            remote_vteps = entry.get("remoteVteps")
+            is_l2 = str(entry.get("type")).lower() == "l2"
+            vnis.append(
+                EvpnVni(
+                    vni=entry["vni"],
+                    type=EvpnVniType(entry["type"].lower()) if entry.get("type") else None,
+                    vrf=entry.get("tenantVrf"),
+                    # L2 and L3 VNIs name the same address differently
+                    local_vtep=entry.get("vtepIp") or entry.get("localVtepIp"),
+                    # FRR omits remoteVteps on an L2 VNI that has no peers
+                    remote_vteps=[EvpnRemoteVtep(ip=vtep["ip"]) for vtep in remote_vteps or []]
+                    if is_l2 else None,
+                    # an L3 VNI's numMacs counts router MACs, not hosts
+                    mac_count=entry.get("numMacs") if is_l2 else None,
+                )
+            )
+        return EvpnVnis(vnis=vnis)
