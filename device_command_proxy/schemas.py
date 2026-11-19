@@ -36,6 +36,11 @@ class RouterRole(StrEnum):
     DR_OTHER = "dr_other"
 
 
+class EvpnVniType(StrEnum):
+    L2 = "l2"
+    L3 = "l3"
+
+
 class InterfaceStatus(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -392,6 +397,30 @@ class MplsLdpNeighbors(BaseModel):
     neighbors: list[MplsLdpNeighbor]
 
 
+class EvpnRemoteVtep(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ip: str
+
+
+class EvpnVni(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    vni: int
+    type: EvpnVniType | None
+    vrf: str | None
+    local_vtep: str | None
+    # the VTEPs this device floods to; an L3VNI has none
+    remote_vteps: list[EvpnRemoteVtep] | None
+    mac_count: int | None
+
+
+class EvpnVnis(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    vnis: list[EvpnVni]
+
+
 class OperationErrorModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -540,6 +569,13 @@ class SuccessLdpNeighborsResultModel(_DeviceResultBase):
     error: None = None
 
 
+class SuccessEvpnVnisResultModel(_DeviceResultBase):
+    operation: Literal[Operation.GET_EVPN_VNIS]
+    status: Literal[ResultStatus.SUCCESS]
+    data: EvpnVnis
+    error: None = None
+
+
 DeviceSuccessResultModel = RootModel[
     Annotated[
         Union[
@@ -559,6 +595,7 @@ DeviceSuccessResultModel = RootModel[
             SuccessIsisDatabaseResultModel,
             SuccessMplsForwardingResultModel,
             SuccessLdpNeighborsResultModel,
+            SuccessEvpnVnisResultModel,
         ],
         Field(discriminator="operation"),
     ]

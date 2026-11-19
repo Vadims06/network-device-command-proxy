@@ -20,6 +20,7 @@ class Operation(StrEnum):
     GET_ISIS_DATABASE = "get_isis_database"
     GET_MPLS_FORWARDING = "get_mpls_forwarding"
     GET_LDP_NEIGHBORS = "get_ldp_neighbors"
+    GET_EVPN_VNIS = "get_evpn_vnis"
 
 
 class ArgumentKind(StrEnum):

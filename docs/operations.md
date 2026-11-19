@@ -965,6 +965,65 @@ Response:
 }
 ```
 
+## get_evpn_vnis
+
+Platforms: FRR. The EVPN VNIs the device carries: L2 and L3 VNI, tenant VRF, local VTEP, the remote VTEPs and the MAC count of an L2 VNI (both null for an L3 VNI).
+
+Request:
+
+```json
+{"operation": "get_evpn_vnis", "devices": ["123.14.14.14"], "arguments": {}}
+```
+
+Response:
+
+```json
+{
+  "request_id": "",
+  "results": [
+    {
+      "device": "123.14.14.14",
+      "operation": "get_evpn_vnis",
+      "platform": "frr",
+      "status": "success",
+      "data": {
+        "vnis": [
+          {
+            "vni": 1010,
+            "type": "l2",
+            "vrf": "tenant1",
+            "local_vtep": "123.14.14.14",
+            "remote_vteps": [
+              {
+                "ip": "123.123.30.30"
+              },
+              {
+                "ip": "123.123.31.31"
+              },
+              {
+                "ip": "123.15.15.15"
+              }
+            ],
+            "mac_count": 1
+          },
+          {
+            "vni": 5000,
+            "type": "l3",
+            "vrf": "tenant1",
+            "local_vtep": "123.14.14.14",
+            "remote_vteps": null,
+            "mac_count": null
+          }
+        ]
+      },
+      "duration_ms": 0,
+      "unsupported_fields": [],
+      "data_source": "fixture"
+    }
+  ]
+}
+```
+
 ## Errors
 
 Unsupported platform/operation pair (IOS XR has no `get_route`):
