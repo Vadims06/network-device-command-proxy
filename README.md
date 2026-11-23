@@ -235,6 +235,100 @@ curl -s -X POST localhost:8080/v1/execute \
   -d '{"operation":"get_route","devices":["router1"],"arguments":{"prefix":"10.10.10.6/32"}}'
 ```
 
+### Same host as the agent
+
+An agent with a shell reads whatever its OS user can read: the environment of
+its own processes in `/proc/<pid>/environ`, files and `docker inspect`. Run the
+proxy as another user, so the device credentials stay out of the agent's reach
+and the agent reaches the devices only through the proxy's read-only operations.
+
+```mermaid
+sequenceDiagram
+    box Agent's OS user
+        actor Person
+        participant Agent as Agent (Claude Code, OpenClaw)
+        participant MCP as device-command-mcp (stdio)
+    end
+    box Proxy's OS user (systemd DynamicUser)
+        participant Proxy as network-device-command-proxy
+    end
+    participant Router
+    Person->>Agent: "OSPF neighbors on R3?"
+    Agent->>MCP: get_ospf_neighbors(R3) over stdio
+    MCP->>Proxy: POST 127.0.0.1:8080/v1/execute + proxy token
+    Note over Proxy: token matches, operation allow-listed, R3 in inventory
+    Proxy->>Router: SSH, one show command, password from proxy.env
+    Router->>Proxy: command output
+    Proxy->>MCP: JSON, audit line on stdout
+    MCP->>Agent: JSON
+    Agent->>Person: answer
+```
+
+The agent's user must have no `sudo` and must not be in the `docker` group,
+which is equivalent to root.
+
+```bash
+sudo python3.12 -m venv /opt/device-command-proxy/venv
+sudo /opt/device-command-proxy/venv/bin/pip install .
+sudo install -d -m 0755 /etc/device-command-proxy
+sudo install -m 0644 inventory.json /etc/device-command-proxy/inventory.json
+sudo install -m 0600 /dev/null /etc/device-command-proxy/proxy.env
+sudoedit /etc/device-command-proxy/proxy.env
+```
+
+`proxy.env` holds every secret, readable only by root:
+
+```env
+EXECUTION_PROXY_TOKEN=replace-with-a-random-value
+DEVICE_USERNAME=diag
+DEVICE_PASSWORD=replace-with-device-password
+```
+
+With Vault, `VAULT_ADDR` and `VAULT_TOKEN` go here instead of the `DEVICE_*`
+lines, and `PROFILE_PATHS_FILE` points to a file in `/etc/device-command-proxy`.
+
+`/etc/systemd/system/device-command-proxy.service`:
+
+```ini
+[Unit]
+Description=network-device-command-proxy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+EnvironmentFile=/etc/device-command-proxy/proxy.env
+Environment=STATIC_INVENTORY_PATH=/etc/device-command-proxy/inventory.json
+Environment=SSH_KNOWN_HOSTS_FILE=/var/lib/device-command-proxy/known_hosts
+StateDirectory=device-command-proxy
+ExecStart=/opt/device-command-proxy/venv/bin/uvicorn device_command_proxy.main:app --host 127.0.0.1 --port 8080
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now device-command-proxy
+```
+
+Secrets go to `EnvironmentFile`, never to `Environment=`: any user can read the
+unit and `systemctl show`. `DynamicUser` runs the service under a user that
+owns no files outside its state directory. The agent's MCP client gets only
+`EXECUTION_PROXY_TOKEN`, which allows nothing beyond the operations listed
+above.
+
+Check from the agent's user that nothing leaks:
+
+```bash
+cat /proc/$(systemctl show -p MainPID --value device-command-proxy)/environ  # Permission denied
+cat /etc/device-command-proxy/proxy.env                                     # Permission denied
+systemctl show -p Environment device-command-proxy                          # no secret values
+```
+
 ### Device requirements
 
 The SSH user must land directly in the device CLI; the proxy runs no separate
