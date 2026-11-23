@@ -262,6 +262,9 @@ DEVICE_USERNAME=diag
 DEVICE_PASSWORD=replace-with-device-password
 ```
 
+With Vault, `VAULT_ADDR` and `VAULT_TOKEN` go here instead of the `DEVICE_*`
+lines, and `PROFILE_PATHS_FILE` points to a file in `/etc/device-command-proxy`.
+
 `/etc/systemd/system/device-command-proxy.service`:
 
 ```ini
