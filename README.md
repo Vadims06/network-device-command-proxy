@@ -242,6 +242,28 @@ its own processes in `/proc/<pid>/environ`, files and `docker inspect`. Run the
 proxy as another user, so the device credentials stay out of the agent's reach
 and the agent reaches the devices only through the proxy's read-only operations.
 
+```mermaid
+sequenceDiagram
+    box Agent's OS user
+        actor Person
+        participant Agent as Agent (Claude Code, OpenClaw)
+        participant MCP as device-command-mcp (stdio)
+    end
+    box Proxy's OS user (systemd DynamicUser)
+        participant Proxy as network-device-command-proxy
+    end
+    participant Router
+    Person->>Agent: "OSPF neighbors on R3?"
+    Agent->>MCP: get_ospf_neighbors(R3) over stdio
+    MCP->>Proxy: POST 127.0.0.1:8080/v1/execute + proxy token
+    Note over Proxy: token matches, operation allow-listed, R3 in inventory
+    Proxy->>Router: SSH, one show command, password from proxy.env
+    Router->>Proxy: command output
+    Proxy->>MCP: JSON, audit line on stdout
+    MCP->>Agent: JSON
+    Agent->>Person: answer
+```
+
 The agent's user must have no `sudo` and must not be in the `docker` group,
 which is equivalent to root.
 
